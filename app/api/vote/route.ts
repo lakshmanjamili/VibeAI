@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
       .gte('created_at', new Date(Date.now() - 60000 * 10).toISOString()) // Last 10 minutes
       .limit(10);
     
-    const uniqueSessions = new Set(recentFingerprints?.map(r => r.session_id) || []);
+    const uniqueSessions = new Set(recentFingerprints?.map((r: any) => r.session_id) || []);
     if (uniqueSessions.size > 3) {
       console.warn('Multiple sessions from same device:', fingerprintHash);
       // Require CAPTCHA for suspicious activity
@@ -170,7 +170,7 @@ export async function POST(req: NextRequest) {
       console.warn('Vote spike detected for post:', postId);
       
       // Check IP diversity
-      const uniqueIps = new Set(recentVotes.map(v => v.ip_hash));
+      const uniqueIps = new Set(recentVotes.map((v: any) => v.ip_hash));
       if (uniqueIps.size < 10) {
         // Less than 10 unique IPs for 50+ votes is suspicious
         return NextResponse.json(
