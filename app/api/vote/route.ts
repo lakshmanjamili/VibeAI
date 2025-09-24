@@ -184,18 +184,10 @@ export async function POST(req: NextRequest) {
     }
 
     // 🛡️ Layer 10: Database Transaction with Fraud Check
-    const { data, error } = await supabase.rpc('toggle_anonymous_like_secure', {
+    const { data, error } = await (supabase.rpc as any)('toggle_anonymous_like', {
       p_post_id: postId,
       p_session_id: sessionId,
-      p_ip_hash: hashedIp,
-      p_device_fingerprint: fingerprintHash,
-      p_user_agent: req.headers.get('user-agent') || '',
-      p_metadata: {
-        timestamp: new Date().toISOString(),
-        clientIp: clientIp.substring(0, 3) + '***', // Store partial IP for analysis
-        captchaVerified: !!captchaToken,
-        proofOfWorkCompleted: !!proofOfWork
-      }
+      p_ip_hash: hashedIp
     });
 
     if (error) {

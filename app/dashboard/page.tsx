@@ -101,7 +101,7 @@ export default function DashboardPage() {
       const { data: postsData, error: postsError } = await supabase
         .from('posts_with_metrics')
         .select('*')
-        .eq('user_id', userData.id)
+        .eq('user_id', (userData as any).id)
         .order('created_at', { ascending: false });
 
       if (postsError) throw postsError;
@@ -110,7 +110,7 @@ export default function DashboardPage() {
 
       // Calculate stats
       if (postsData) {
-        const totalStats = postsData.reduce((acc, post) => ({
+        const totalStats = postsData.reduce((acc: any, post: any) => ({
           totalPosts: acc.totalPosts + 1,
           totalLikes: acc.totalLikes + (post.total_likes_count || 0),
           totalViews: acc.totalViews + (post.view_count || 0),
