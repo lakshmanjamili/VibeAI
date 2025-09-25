@@ -295,9 +295,9 @@ export default function UploadPage() {
         throw selectError;
       }
 
-      if (existingUser?.id) {
-        console.log('Found existing user:', existingUser.id);
-        return existingUser.id;
+      if ((existingUser as any)?.id) {
+        console.log('Found existing user:', (existingUser as any).id);
+        return (existingUser as any).id;
       }
 
       // Create new user
@@ -310,7 +310,7 @@ export default function UploadPage() {
 
       console.log('Creating new user with data:', userData);
 
-      const { data: newUser, error: insertError } = await supabase
+      const { data: newUser, error: insertError } = await (supabase as any)
         .from('users')
         .insert(userData)
         .select('id')
@@ -334,9 +334,9 @@ export default function UploadPage() {
             .eq('clerk_id', userId)
             .single();
           
-          if (retryUser?.id) {
-            console.log('Found user on retry:', retryUser.id);
-            return retryUser.id;
+          if ((retryUser as any)?.id) {
+            console.log('Found user on retry:', (retryUser as any).id);
+            return (retryUser as any).id;
           }
         }
         
@@ -391,7 +391,7 @@ export default function UploadPage() {
       prompt: prompt.trim() || null,
     };
 
-    const { data: post, error } = await supabase
+    const { data: post, error } = await (supabase as any)
       .from('posts')
       .insert(postData)
       .select('id')
@@ -406,7 +406,7 @@ export default function UploadPage() {
     if (tags.length === 0) return;
 
     try {
-      await supabase.rpc('add_hashtags_to_post', {
+      await (supabase.rpc as any)('add_hashtags_to_post', {
         p_post_id: postId,
         p_hashtags: tags,
       });

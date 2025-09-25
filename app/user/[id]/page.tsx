@@ -92,14 +92,14 @@ export default function UserProfilePage() {
       // Calculate stats
       const stats: UserStats = {
         total_posts: postsData?.length || 0,
-        total_likes: postsData?.reduce((sum, post) => sum + (post.total_likes_count || 0), 0) || 0,
-        total_views: postsData?.reduce((sum, post) => sum + (post.view_count || 0), 0) || 0,
-        total_downloads: postsData?.reduce((sum, post) => sum + (post.download_count || 0), 0) || 0,
+        total_likes: postsData?.reduce((sum: number, post: any) => sum + (post.total_likes_count || 0), 0) || 0,
+        total_views: postsData?.reduce((sum: number, post: any) => sum + (post.view_count || 0), 0) || 0,
+        total_downloads: postsData?.reduce((sum: number, post: any) => sum + (post.download_count || 0), 0) || 0,
         posts_by_category: {
-          photo: postsData?.filter(p => p.category === 'photo').length || 0,
-          video: postsData?.filter(p => p.category === 'video').length || 0,
-          gif: postsData?.filter(p => p.category === 'gif').length || 0,
-          storybook: postsData?.filter(p => p.category === 'storybook').length || 0,
+          photo: postsData?.filter((p: any) => p.category === 'photo').length || 0,
+          video: postsData?.filter((p: any) => p.category === 'video').length || 0,
+          gif: postsData?.filter((p: any) => p.category === 'gif').length || 0,
+          storybook: postsData?.filter((p: any) => p.category === 'storybook').length || 0,
         }
       };
       setStats(stats);

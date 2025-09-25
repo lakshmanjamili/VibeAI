@@ -73,10 +73,10 @@ export default function CategoryShowcase() {
         if (error) return null;
 
         return {
-          ...data,
-          username: data.users?.username,
-          avatar_url: data.users?.avatar_url,
-          likes_count: data.likes?.[0]?.count || 0,
+          ...(data as any),
+          username: (data as any).users?.username,
+          avatar_url: (data as any).users?.avatar_url,
+          likes_count: (data as any).likes?.[0]?.count || 0,
         };
       });
 

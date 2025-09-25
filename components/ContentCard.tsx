@@ -27,7 +27,7 @@ export default function ContentCard({ post, onLike, onDownload }: ContentCardPro
     photo: ImageIcon,
   };
 
-  const CategoryIcon = categoryIcons[post.category];
+  const CategoryIcon = categoryIcons[post.category as keyof typeof categoryIcons];
 
   const handleLike = () => {
     setIsLiked(!isLiked);

@@ -128,7 +128,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
           .single();
 
         if (userData) {
-          commentData.user_id = userData.id;
+          commentData.user_id = (userData as any).id;
         }
       } else {
         // Anonymous comment
@@ -143,9 +143,9 @@ export default function CommentSection({ postId }: CommentSectionProps) {
       if (error) throw error;
 
       // Update comments count
-      await supabase
+      await (supabase as any)
         .from('posts')
-        .update({ comments_count: supabase.raw('comments_count + 1') } as any)
+        .update({ comments_count: (supabase as any).raw('comments_count + 1') })
         .eq('id', postId);
 
       setNewComment('');

@@ -88,9 +88,9 @@ export default function PostDetailPage() {
 
   const incrementViewCount = async (postId: string) => {
     try {
-      await supabase
+      await (supabase as any)
         .from('posts')
-        .update({ view_count: supabase.raw('view_count + 1') } as any)
+        .update({ view_count: (supabase as any).raw('view_count + 1') })
         .eq('id', postId);
     } catch (error) {
       console.error('Error incrementing view count:', error);
@@ -102,7 +102,7 @@ export default function PostDetailPage() {
     
     try {
       // Update download count
-      await supabase
+      await (supabase as any)
         .from('posts')
         .update({ download_count: (post.download_count || 0) + 1 })
         .eq('id', post.id);

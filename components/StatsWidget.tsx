@@ -42,7 +42,7 @@ export default function StatsWidget() {
         .from('posts')
         .select('download_count');
       
-      const totalDownloads = downloadData?.reduce((sum, post) => sum + (post.download_count || 0), 0) || 0;
+      const totalDownloads = downloadData?.reduce((sum: number, post: any) => sum + (post.download_count || 0), 0) || 0;
 
       // Fetch today's posts
       const today = new Date();

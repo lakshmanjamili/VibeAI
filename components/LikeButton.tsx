@@ -65,7 +65,7 @@ export default function LikeButton({ postId, initialLikeCount, className = '' }:
       setLikeCount(prev => newLikedState ? prev + 1 : Math.max(0, prev - 1));
 
       // Call the RPC function to toggle like
-      const { data, error } = await supabase.rpc('toggle_anonymous_like', {
+      const { data, error } = await (supabase.rpc as any)('toggle_anonymous_like', {
         p_post_id: postId,
         p_session_id: sessionId,
         p_ip_hash: null

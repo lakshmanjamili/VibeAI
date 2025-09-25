@@ -111,7 +111,7 @@ export default function HomePage() {
         .select('category')
         .then(result => {
           const counts: any = {};
-          result.data?.forEach(post => {
+          result.data?.forEach((post: any) => {
             counts[post.category] = (counts[post.category] || 0) + 1;
           });
           return { data: counts };

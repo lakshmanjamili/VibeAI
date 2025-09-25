@@ -40,7 +40,7 @@ export default function CreatorSpotlight() {
 
       // For each user, fetch their stats
       const creatorsWithStats = await Promise.all(
-        (userData || []).map(async (user) => {
+        (userData || []).map(async (user: any) => {
           // Get post count
           const { count: postCount } = await supabase
             .from('posts')
@@ -57,7 +57,7 @@ export default function CreatorSpotlight() {
           let totalViews = 0;
 
           if (posts && posts.length > 0) {
-            const postIds = posts.map(p => p.id);
+            const postIds = posts.map((p: any) => p.id);
             
             // Get likes count
             const { count: likesCount } = await supabase
@@ -73,7 +73,7 @@ export default function CreatorSpotlight() {
               .select('view_count')
               .eq('user_id', user.id);
 
-            totalViews = viewData?.reduce((sum, post) => sum + (post.view_count || 0), 0) || 0;
+            totalViews = viewData?.reduce((sum: number, post: any) => sum + (post.view_count || 0), 0) || 0;
           }
 
           return {
