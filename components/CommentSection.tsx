@@ -142,10 +142,18 @@ export default function CommentSection({ postId }: CommentSectionProps) {
 
       if (error) throw error;
 
-      // Update comments count
-      await (supabase as any)
+      // Update comments count - fetch current count and increment
+      const { data: postData } = await supabase
         .from('posts')
-        .update({ comments_count: (supabase as any).raw('comments_count + 1') })
+        .select('comments_count')
+        .eq('id', postId)
+        .single();
+
+      const currentCount = postData?.comments_count || 0;
+      
+      await supabase
+        .from('posts')
+        .update({ comments_count: currentCount + 1 })
         .eq('id', postId);
 
       setNewComment('');
