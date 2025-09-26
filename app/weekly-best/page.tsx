@@ -24,13 +24,12 @@ export default function WeeklyBestPage() {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-      // Query posts from last 7 days with their likes count
+      // Query posts from last 7 days
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select(`
           *,
-          users!inner(username, avatar_url),
-          likes(count)
+          users!inner(username, avatar_url)
         `)
         .gte('created_at', sevenDaysAgo.toISOString())
         .order('created_at', { ascending: false });
@@ -40,13 +39,23 @@ export default function WeeklyBestPage() {
         throw postsError;
       }
 
-      // Transform data to include metrics
-      const postsWithMetrics = (postsData || []).map((post: any) => ({
-        ...post,
-        username: post.users?.username,
-        avatar_url: post.users?.avatar_url,
-        total_likes_count: post.likes?.[0]?.count || 0
-      }));
+      // Get likes count for each post
+      const postsWithMetrics = await Promise.all(
+        (postsData || []).map(async (post: any) => {
+          const { count: likesCount } = await supabase
+            .from('likes')
+            .select('*', { count: 'exact', head: true })
+            .eq('post_id', post.id);
+
+          return {
+            ...post,
+            username: post.users?.username,
+            avatar_url: post.users?.avatar_url,
+            total_likes_count: likesCount || 0,
+            comments_count: post.comments_count || 0
+          };
+        })
+      );
 
       // Sort by likes count
       postsWithMetrics.sort((a: any, b: any) => b.total_likes_count - a.total_likes_count);
