@@ -20,13 +20,34 @@ export default function TopLikesPage() {
 
   const fetchTopLiked = async () => {
     try {
-      const { data, error } = await supabase
-        .from('top_liked_posts')
-        .select('*');
+      // Query posts with their likes count
+      const { data: postsData, error: postsError } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          users!inner(username, avatar_url),
+          likes(count)
+        `)
+        .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (postsError) {
+        console.error('Error:', postsError);
+        throw postsError;
+      }
 
-      setPosts(data || []);
+      // Transform data to include metrics
+      const postsWithMetrics = (postsData || []).map((post: any) => ({
+        ...post,
+        username: post.users?.username,
+        avatar_url: post.users?.avatar_url,
+        total_likes_count: post.likes?.[0]?.count || 0
+      }));
+
+      // Sort by likes count
+      postsWithMetrics.sort((a: any, b: any) => b.total_likes_count - a.total_likes_count);
+
+      // Take top 20
+      setPosts(postsWithMetrics.slice(0, 20));
     } catch (error) {
       console.error('Error fetching top liked posts:', error);
       toast({

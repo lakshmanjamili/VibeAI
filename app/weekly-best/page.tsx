@@ -20,13 +20,39 @@ export default function WeeklyBestPage() {
 
   const fetchWeeklyBest = async () => {
     try {
-      const { data, error } = await supabase
-        .from('weekly_top_posts')
-        .select('*');
+      // Get date 7 days ago
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-      if (error) throw error;
+      // Query posts from last 7 days with their likes count
+      const { data: postsData, error: postsError } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          users!inner(username, avatar_url),
+          likes(count)
+        `)
+        .gte('created_at', sevenDaysAgo.toISOString())
+        .order('created_at', { ascending: false });
 
-      setPosts(data || []);
+      if (postsError) {
+        console.error('Error:', postsError);
+        throw postsError;
+      }
+
+      // Transform data to include metrics
+      const postsWithMetrics = (postsData || []).map((post: any) => ({
+        ...post,
+        username: post.users?.username,
+        avatar_url: post.users?.avatar_url,
+        total_likes_count: post.likes?.[0]?.count || 0
+      }));
+
+      // Sort by likes count
+      postsWithMetrics.sort((a: any, b: any) => b.total_likes_count - a.total_likes_count);
+
+      // Take top 20
+      setPosts(postsWithMetrics.slice(0, 20));
     } catch (error) {
       console.error('Error fetching weekly best:', error);
       toast({
