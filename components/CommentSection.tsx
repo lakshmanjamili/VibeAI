@@ -149,9 +149,9 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         .eq('id', postId)
         .single();
 
-      const currentCount = postData?.comments_count || 0;
+      const currentCount = (postData as any)?.comments_count || 0;
       
-      await supabase
+      await (supabase as any)
         .from('posts')
         .update({ comments_count: currentCount + 1 })
         .eq('id', postId);
