@@ -126,7 +126,7 @@ export default function PremiumHero() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-supreme mb-8"
         >
           <Sparkles className="h-4 w-4 text-yellow-400" />
-          <span className="text-sm font-medium">Powered by AI Magic</span>
+          <span className="text-sm font-medium">Powered by Loukri AI</span>
           <Star className="h-4 w-4 text-yellow-400 animate-pulse" />
         </motion.div>
 
