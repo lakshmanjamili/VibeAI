@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useAuth, UserButton } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Upload, Home, Trophy, Heart } from 'lucide-react';
+import { Sparkles, Upload, Home, Trophy, Heart, Wand2 } from 'lucide-react';
 
 export default function Navbar() {
   const { isSignedIn } = useAuth();
@@ -34,6 +34,10 @@ export default function Navbar() {
               <Link href="/top-likes" className="flex items-center space-x-1 text-sm font-medium transition-colors hover:text-primary">
                 <Heart className="h-4 w-4" />
                 <span>Top Likes</span>
+              </Link>
+              <Link href="/ai-studio" className="flex items-center space-x-1 text-sm font-medium transition-colors hover:text-primary">
+                <Wand2 className="h-4 w-4" />
+                <span>AI Studio</span>
               </Link>
             </div>
           </div>

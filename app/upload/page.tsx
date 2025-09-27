@@ -69,6 +69,7 @@ export default function UploadPage() {
   const [category, setCategory] = useState<PostCategory>('photo');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>('');
+  const [aiGeneratedUrl, setAiGeneratedUrl] = useState<string>('');
   
   // AI Generation state
   const [aiModel, setAiModel] = useState<string>('');
@@ -90,6 +91,36 @@ export default function UploadPage() {
       router.replace('/sign-in?redirect=/upload');
     }
   }, [isLoaded, isSignedIn, router]);
+
+  // Handle AI-generated content from URL params
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const isAiGenerated = searchParams.get('ai_generated');
+    const url = searchParams.get('url');
+    const aiPrompt = searchParams.get('prompt');
+    const model = searchParams.get('model');
+
+    if (isAiGenerated === 'true' && url) {
+      setAiGeneratedUrl(url);
+      setPreview(url);
+      setPrompt(aiPrompt || '');
+      setAiModel(model || '');
+      
+      // Auto-generate title from prompt
+      if (aiPrompt) {
+        setTitle(aiPrompt.substring(0, 50) + (aiPrompt.length > 50 ? '...' : ''));
+      }
+      
+      // Detect category from model
+      if (model?.includes('veo')) {
+        setCategory('video');
+      } else if (model?.includes('gif')) {
+        setCategory('gif');
+      } else {
+        setCategory('photo');
+      }
+    }
+  }, []);
 
   // Fetch AI models and test connection
   useEffect(() => {
@@ -428,7 +459,17 @@ export default function UploadPage() {
       return;
     }
 
-    if (!validateForm() || !file) return;
+    // For AI-generated content, we don't need a file
+    if (!aiGeneratedUrl && !file) {
+      toast({
+        title: 'No content to upload',
+        description: 'Please select a file or generate content with AI',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!validateForm()) return;
 
     setUploadState({
       loading: true,
@@ -442,10 +483,20 @@ export default function UploadPage() {
       const dbUserId = await ensureUserExists(userId);
       if (!dbUserId) throw new Error('Failed to get user ID');
 
-      // Step 2: Upload file (20-60%)
+      // Step 2: Upload file or use AI-generated URL (20-60%)
       setUploadState(prev => ({ ...prev, progress: 40 }));
-      const storagePath = generateStoragePath(category, dbUserId, file.name);
-      const fileUrl = await uploadFile(file, storagePath);
+      let fileUrl: string;
+      
+      if (aiGeneratedUrl) {
+        // Use the AI-generated URL directly
+        fileUrl = aiGeneratedUrl;
+      } else if (file) {
+        // Upload the file
+        const storagePath = generateStoragePath(category, dbUserId, file.name);
+        fileUrl = await uploadFile(file, storagePath);
+      } else {
+        throw new Error('No content to upload');
+      }
       
       // Step 3: Generate thumbnail URL (60-70%)
       setUploadState(prev => ({ ...prev, progress: 70 }));
