@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CommentSection from '@/components/CommentSection';
 import LikeButton from '@/components/LikeButton';
+import MediaDisplay from '@/components/MediaDisplay';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +45,7 @@ export default function PostDetailPage() {
   const [post, setPost] = useState<PostWithMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [relatedPosts, setRelatedPosts] = useState<PostWithMetrics[]>([]);
 
   // Get or create session ID for anonymous interactions
   const getSessionId = () => {
@@ -74,6 +76,11 @@ export default function PostDetailPage() {
       if (error) throw error;
 
       setPost(data);
+      
+      // Fetch related posts from the same user
+      if ((data as any)?.user_id) {
+        fetchRelatedPosts((data as any).user_id, postId);
+      }
     } catch (error) {
       console.error('Error fetching post:', error);
       toast({
@@ -83,6 +90,24 @@ export default function PostDetailPage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRelatedPosts = async (authorUserId: string, currentPostId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('posts_with_metrics')
+        .select('*')
+        .eq('user_id', authorUserId)
+        .neq('id', currentPostId)
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (error) throw error;
+
+      setRelatedPosts(data || []);
+    } catch (error) {
+      console.error('Error fetching related posts:', error);
     }
   };
 
@@ -224,12 +249,12 @@ export default function PostDetailPage() {
             <Card className="overflow-hidden">
               <div className="relative aspect-video bg-muted">
                 {post.file_url && (
-                  <Image
+                  <MediaDisplay
                     src={post.file_url}
                     alt={post.title}
-                    fill
-                    className="object-contain"
-                    priority
+                    category={post.category}
+                    thumbnail={post.thumbnail_url || undefined}
+                    className="w-full h-full"
                   />
                 )}
               </div>
@@ -403,17 +428,86 @@ export default function PostDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Related Posts (placeholder) */}
-            <Card>
-              <CardHeader>
-                <h3 className="text-lg font-semibold">More from {post.username || 'this creator'}</h3>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  More content coming soon...
-                </p>
-              </CardContent>
-            </Card>
+            {/* Related Posts */}
+            {relatedPosts.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <h3 className="text-lg font-semibold">More from {post.username || 'this creator'}</h3>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {relatedPosts.map((relatedPost) => (
+                      <Link 
+                        key={relatedPost.id} 
+                        href={`/post/${relatedPost.id}`}
+                        className="block"
+                      >
+                        <div className="flex gap-3 p-2 rounded-lg hover:bg-muted transition-colors">
+                          {/* Thumbnail */}
+                          <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+                            {relatedPost.thumbnail_url || (relatedPost.category === 'photo' || relatedPost.category === 'gif') ? (
+                              <img
+                                src={relatedPost.thumbnail_url || relatedPost.file_url}
+                                alt={relatedPost.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : relatedPost.category === 'video' && relatedPost.file_url ? (
+                              <div className="relative w-full h-full">
+                                <video
+                                  src={relatedPost.file_url}
+                                  className="w-full h-full object-cover"
+                                  muted
+                                  playsInline
+                                  preload="metadata"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                  <Video className="h-4 w-4 text-white" />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                {React.createElement(getCategoryIcon(relatedPost.category), { className: 'h-6 w-6 text-muted-foreground' })}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-sm line-clamp-1 hover:text-primary transition-colors">
+                              {relatedPost.title}
+                            </h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {formatDistanceToNow(new Date(relatedPost.created_at), { addSuffix: true })}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Heart className="h-3 w-3" />
+                                {relatedPost.total_likes_count || 0}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Eye className="h-3 w-3" />
+                                {relatedPost.view_count || 0}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  
+                  {/* View All Link */}
+                  <div className="mt-4 pt-4 border-t">
+                    <Link 
+                      href={`/gallery?user=${post.username}`}
+                      className="text-sm text-primary hover:underline flex items-center gap-1"
+                    >
+                      View all posts from {post.username}
+                      <ChevronLeft className="h-3 w-3 rotate-180" />
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>

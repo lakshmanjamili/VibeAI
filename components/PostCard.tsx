@@ -47,11 +47,18 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
   };
 
   const getThumbnail = () => {
-    // For videos and storybooks without thumbnails, show a placeholder
-    if (!post.thumbnail_url && (post.category === 'video' || post.category === 'storybook')) {
-      return null;
+    // Always try to use thumbnail_url first if available
+    if (post.thumbnail_url) {
+      return post.thumbnail_url;
     }
-    return post.thumbnail_url || post.file_url;
+    
+    // For photos and GIFs, use the file URL directly
+    if (post.category === 'photo' || post.category === 'gif') {
+      return post.file_url;
+    }
+    
+    // For videos and storybooks, return null to show icon placeholder
+    return null;
   };
 
   return (
@@ -70,6 +77,22 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
                 alt={post.title}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
+            ) : post.category === 'video' && post.file_url ? (
+              // For videos without thumbnails, show video element with first frame
+              <div className="relative w-full h-full">
+                <video
+                  src={post.file_url}
+                  className="w-full h-full object-cover"
+                  muted
+                  playsInline
+                  preload="metadata"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                  <div className="rounded-full bg-white/90 p-3">
+                    <Video className="h-8 w-8 text-black" />
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 {getCategoryIcon()}

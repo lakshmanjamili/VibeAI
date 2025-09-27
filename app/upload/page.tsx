@@ -20,13 +20,13 @@ import { Upload, Loader2, Film, Video, BookOpen, ImageIcon, Wand2, Hash, X, Info
 import { useDropzone } from 'react-dropzone';
 
 // File upload configuration
-const FILE_SIZE_LIMIT = 100 * 1024 * 1024; // 100MB
+const FILE_SIZE_LIMIT = 500 * 1024 * 1024; // 500MB for larger video files
 const MAX_HASHTAGS = 10;
 const ALLOWED_MIME_TYPES = {
   gif: ['.gif'],
-  video: ['.mp4', '.webm', '.mov'],
-  storybook: ['.pdf', '.epub'],
-  photo: ['.jpg', '.jpeg', '.png', '.webp'],
+  video: ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.m4v', '.wmv', '.flv', '.3gp', '.mpg', '.mpeg', '.ogv', '.ogg'],
+  storybook: ['.pdf', '.epub', '.txt', '.doc', '.docx'],
+  photo: ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg', '.bmp', '.ico', '.tiff', '.tif', '.heic', '.heif', '.raw'],
 };
 
 // Category configuration
