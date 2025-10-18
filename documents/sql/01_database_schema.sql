@@ -485,7 +485,112 @@ VALUES ('posts', 'posts', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
--- STEP 12: CREATE STORAGE POLICIES
+-- STEP 12: AI CREDITS AND USAGE TRACKING
+-- ============================================
+
+-- User AI Credits table for tracking AI usage
+CREATE TABLE IF NOT EXISTS user_ai_credits (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id TEXT NOT NULL UNIQUE,
+    
+    -- Image generation credits
+    imagen_used INTEGER DEFAULT 0,
+    imagen_limit INTEGER DEFAULT 10,
+    gemini_used INTEGER DEFAULT 0,
+    gemini_limit INTEGER DEFAULT 50,
+    grok_used INTEGER DEFAULT 0,
+    grok_limit INTEGER DEFAULT 5,
+    veo_used INTEGER DEFAULT 0,
+    veo_limit INTEGER DEFAULT 2,
+    nano_banana_used INTEGER DEFAULT 0,
+    nano_banana_limit INTEGER DEFAULT 10,
+    
+    -- Chat credits
+    chat_messages_used INTEGER DEFAULT 0,
+    chat_messages_limit INTEGER DEFAULT 100,
+    
+    -- Wan AI credits
+    wan_text_to_image_used INTEGER DEFAULT 0,
+    wan_text_to_image_limit INTEGER DEFAULT 5,
+    wan_text_to_video_used INTEGER DEFAULT 0,
+    wan_text_to_video_limit INTEGER DEFAULT 2,
+    wan_image_to_video_used INTEGER DEFAULT 0,
+    wan_image_to_video_limit INTEGER DEFAULT 2,
+    
+    -- Reset tracking
+    reset_date TIMESTAMPTZ DEFAULT NOW() + INTERVAL '30 days',
+    last_reset TIMESTAMPTZ DEFAULT NOW(),
+    
+    -- Timestamps
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create index for faster lookups
+CREATE INDEX IF NOT EXISTS idx_user_ai_credits_user_id ON user_ai_credits(user_id);
+
+-- AI Generation Usage tracking
+CREATE TABLE IF NOT EXISTS ai_generation_usage (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    model TEXT NOT NULL,
+    prompt TEXT,
+    status TEXT DEFAULT 'processing',
+    result_url TEXT,
+    result_data JSONB,
+    error_message TEXT,
+    generation_time_ms INTEGER,
+    credits_used INTEGER DEFAULT 1,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create index for usage tracking
+CREATE INDEX IF NOT EXISTS idx_ai_generation_usage_user_id ON ai_generation_usage(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_generation_usage_created_at ON ai_generation_usage(created_at);
+
+-- Enable RLS for AI tables
+ALTER TABLE user_ai_credits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_generation_usage ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for user_ai_credits
+CREATE POLICY "Users can read own AI credits" ON user_ai_credits
+    FOR SELECT USING (
+        auth.uid()::TEXT = user_id 
+        OR user_id LIKE 'anon_%'
+        OR user_id LIKE 'session_%'
+    );
+
+CREATE POLICY "Users can create own AI credits" ON user_ai_credits
+    FOR INSERT WITH CHECK (
+        auth.uid()::TEXT = user_id 
+        OR user_id LIKE 'anon_%'
+        OR user_id LIKE 'session_%'
+    );
+
+CREATE POLICY "Users can update own AI credits" ON user_ai_credits
+    FOR UPDATE USING (
+        auth.uid()::TEXT = user_id 
+        OR user_id LIKE 'anon_%'
+        OR user_id LIKE 'session_%'
+    );
+
+-- RLS Policies for ai_generation_usage
+CREATE POLICY "Users can read own generation usage" ON ai_generation_usage
+    FOR SELECT USING (
+        auth.uid()::TEXT = user_id 
+        OR user_id LIKE 'anon_%'
+        OR user_id LIKE 'session_%'
+    );
+
+CREATE POLICY "Users can create generation usage" ON ai_generation_usage
+    FOR INSERT WITH CHECK (
+        auth.uid()::TEXT = user_id 
+        OR user_id LIKE 'anon_%'
+        OR user_id LIKE 'session_%'
+    );
+
+-- ============================================
+-- STEP 13: CREATE STORAGE POLICIES
 -- ============================================
 
 -- Anyone can view posts

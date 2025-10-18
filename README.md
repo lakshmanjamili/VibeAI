@@ -10,6 +10,7 @@ A cutting-edge community platform where creators share, discover, and celebrate 
 ## ✨ Features
 
 ### Core Functionality
+
 - **🎨 Multi-Format Support**: Upload and share GIFs, videos, photos, and storybooks
 - **🤖 AI Generation Tracking**: Document AI models used (Grok, DALL-E, Midjourney, etc.) and prompts
 - **💝 Anonymous Engagement**: Vote and comment without creating an account
@@ -20,6 +21,7 @@ A cutting-edge community platform where creators share, discover, and celebrate 
 - **🔍 Smart Search**: Filter by category, hashtags, and AI models
 
 ### 🛡️ Advanced Anti-Bot Protection (NEW)
+
 - **10-Layer Security System**: Prevents vote manipulation and bot attacks
 - **Device Fingerprinting**: Canvas & WebGL fingerprinting across browsers
 - **Behavioral Analysis**: Detects bot patterns and superhuman speeds
@@ -32,6 +34,7 @@ A cutting-edge community platform where creators share, discover, and celebrate 
 - **Time-based Challenges**: Prevents instant bot actions
 
 ### Premium UI Features
+
 - **✨ Glassmorphism Effects**: Modern glass-like UI components
 - **🌈 Animated Gradients**: Dynamic color-shifting backgrounds
 - **🎭 3D Transforms**: Interactive card animations with perspective
@@ -49,6 +52,7 @@ A cutting-edge community platform where creators share, discover, and celebrate 
 ## 🆕 Latest Updates (December 2024)
 
 ### Version 2.0 - Anti-Bot & Security Update
+
 - ✅ **10-Layer Anti-Bot System**: Complete protection against vote manipulation
 - ✅ **Enhanced Database Schema**: Added fraud detection tables
 - ✅ **Device Fingerprinting**: Cross-browser tracking
@@ -58,12 +62,14 @@ A cutting-edge community platform where creators share, discover, and celebrate 
 - ✅ **Scalability Improvements**: Redis-ready architecture
 
 ### Version 1.5 - UI Premium Update
+
 - ✅ **Premium Hero Section**: 3D transforms, parallax effects
 - ✅ **Glassmorphism UI**: Modern glass effects throughout
 - ✅ **Particle Animations**: 50+ floating particles
 - ✅ **Gradient Animations**: Dynamic color shifts
 
 ### Version 1.0 - Core Platform
+
 - ✅ **Anonymous Voting**: Session-based engagement
 - ✅ **AI Tracking**: Model and prompt storage
 - ✅ **Hashtag System**: Content discovery
@@ -78,44 +84,61 @@ A cutting-edge community platform where creators share, discover, and celebrate 
 - **Authentication**: Clerk
 - **Animations**: Framer Motion
 
+## 📚 Documentation
+
+- 📦 **[Storage Setup Guide](./STORAGE_SETUP_GUIDE.md)** - Configure Supabase Storage for AI generations
+- 🚀 **[Deployment Checklist](./DEPLOYMENT_CHECKLIST.md)** - Complete deployment guide
+- 🔧 **[Gemini Setup Guide](./GEMINI_SETUP.md)** - Configure Nano Banana AI
+- 📖 **[Domain Setup](./DOMAIN_SETUP_GUIDE.md)** - Custom domain configuration
+- 🎨 **[Vision Document](./VISION.md)** - Product vision and roadmap
+
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Supabase account
 - Clerk account
+- Gemini API key (for AI generation)
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/vibeai.git
 cd vibeai
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 Fill in your environment variables:
+
 - Clerk keys from your Clerk dashboard
 - Supabase URL and keys from your Supabase project
 - Update `NEXT_PUBLIC_APP_URL` for production
 
 4. Set up Supabase:
+
 - Create a new Supabase project
-- Run the SQL scripts in `supabase/schema.sql` and `supabase/storage.sql`
-- Enable authentication and storage
+- Run the database migration: `documents/sql/01_database_schema.sql`
+- Run the AI credits migration: `documents/sql/AI_CREDITS_MIGRATION.sql`
+- **IMPORTANT**: Run the storage setup: `documents/sql/STORAGE_SETUP.sql`
+- See [STORAGE_SETUP_GUIDE.md](./STORAGE_SETUP_GUIDE.md) for detailed instructions
 
 5. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -135,6 +158,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ## 🗄️ Complete Database Architecture
 
 ### Quick Setup
+
 ```bash
 # 1. Open Supabase SQL Editor
 # 2. Run SUPABASE_SETUP.sql
@@ -142,6 +166,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 ### Database Overview
+
 - **14 Tables** (8 core + 4 anti-bot + 2 system)
 - **30+ Indexes** for optimal performance
 - **2 Views** for complex queries
@@ -152,6 +177,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ### Core Tables (8 Tables)
 
 #### 1. `users` - User Profiles
+
 ```sql
 - id (UUID, PK)
 - clerk_id (TEXT, UNIQUE) -- Synced with Clerk Auth
@@ -163,6 +189,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 2. `posts` - Content with AI Details
+
 ```sql
 - id (UUID, PK)
 - user_id (UUID, FK→users)
@@ -183,6 +210,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 3. `comments` - Hybrid Comment System
+
 ```sql
 - id (UUID, PK)
 - post_id (UUID, FK→posts)
@@ -195,6 +223,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 4. `likes` - Authenticated User Likes
+
 ```sql
 - id (UUID, PK)
 - user_id (UUID, FK→users)
@@ -204,6 +233,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 5. `anonymous_likes` - Session-based Likes
+
 ```sql
 - id (UUID, PK)
 - post_id (UUID, FK→posts)
@@ -218,6 +248,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 6. `hashtags` - Global Tag Registry
+
 ```sql
 - id (UUID, PK)
 - name (TEXT, UNIQUE)
@@ -226,6 +257,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 7. `post_hashtags` - Post-Tag Links
+
 ```sql
 - id (UUID, PK)
 - post_id (UUID, FK→posts)
@@ -234,6 +266,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 8. `ai_models` - AI Model Registry
+
 ```sql
 - id (UUID, PK)
 - name (TEXT, UNIQUE)
@@ -241,11 +274,13 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 - description (TEXT)
 - is_active (BOOLEAN)
 ```
+
 **Pre-populated with**: Nano Banana, Grok, DALL-E 3, Midjourney, Stable Diffusion, Claude
 
 ### Anti-Bot Protection Tables (4 Tables)
 
 #### 9. `fraud_logs` - Suspicious Activity Tracking
+
 ```sql
 - id (UUID, PK)
 - session_id (TEXT)
@@ -258,6 +293,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 10. `rate_limits` - Request Throttling
+
 ```sql
 - id (UUID, PK)
 - identifier (TEXT) -- IP/Session/Device
@@ -269,6 +305,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 11. `reputation_scores` - User Behavior Scoring
+
 ```sql
 - id (UUID, PK)
 - session_id (TEXT, UNIQUE)
@@ -280,6 +317,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 
 #### 12. `blocked_patterns` - Ban Lists
+
 ```sql
 - id (UUID, PK)
 - pattern_type (TEXT) -- 'ip_range', 'user_agent', etc.
@@ -291,8 +329,9 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ### Database Views
 
 #### `posts_with_metrics` - Optimized Gallery View
+
 ```sql
-SELECT 
+SELECT
     posts.* +
     username +
     avatar_url +
@@ -302,27 +341,32 @@ SELECT
     comments_count +
     hashtags[]
 ```
-*Used for: Gallery display, trending posts, search results*
+
+_Used for: Gallery display, trending posts, search results_
 
 #### `suspicious_activity_summary` - Admin Dashboard
+
 ```sql
-SELECT 
+SELECT
     hourly_stats +
     action_types +
     severity_levels +
     unique_sessions +
     unique_ips
 ```
-*Used for: Monitoring, fraud detection, analytics*
+
+_Used for: Monitoring, fraud detection, analytics_
 
 ### Database Functions
 
 #### `toggle_anonymous_like(post_id, session_id, ip_hash)`
+
 - Handles like/unlike for anonymous users
 - Updates counters automatically
 - Returns: BOOLEAN (true=liked, false=unliked)
 
 #### `add_hashtags_to_post(post_id, hashtags[])`
+
 - Adds multiple hashtags to a post
 - Creates new hashtags if needed
 - Updates usage counters
@@ -330,6 +374,7 @@ SELECT
 ### Performance Optimizations
 
 #### Indexes (30+)
+
 ```sql
 -- Critical Performance Indexes
 idx_posts_created_at (DESC) -- Gallery sorting
@@ -342,6 +387,7 @@ idx_fraud_logs_severity -- Security monitoring
 ```
 
 #### Query Performance
+
 - **Gallery Load**: ~50ms for 100 posts
 - **Vote Toggle**: ~20ms average
 - **Comment Load**: ~30ms for 50 comments
@@ -360,6 +406,7 @@ idx_fraud_logs_severity -- Security monitoring
 ### Storage Configuration
 
 #### `posts` Bucket
+
 - **Public**: Yes
 - **Max Size**: 100MB per file
 - **Allowed Types**: Images, Videos, PDFs
@@ -369,6 +416,7 @@ idx_fraud_logs_severity -- Security monitoring
 ### Row Level Security (RLS)
 
 #### Public Access
+
 - ✅ View all posts
 - ✅ View all comments
 - ✅ View all likes
@@ -377,6 +425,7 @@ idx_fraud_logs_severity -- Security monitoring
 - ✅ Create anonymous comments
 
 #### Authenticated Only
+
 - ✅ Create posts
 - ✅ Update own posts
 - ✅ Delete own posts
@@ -384,6 +433,7 @@ idx_fraud_logs_severity -- Security monitoring
 - ✅ Delete own comments
 
 #### System Only
+
 - 🔒 Fraud logs
 - 🔒 Rate limits
 - 🔒 Reputation scores
@@ -391,14 +441,15 @@ idx_fraud_logs_severity -- Security monitoring
 
 ### Database Scaling Plan
 
-| Users | Database Size | Plan | Cost/Month |
-|-------|--------------|------|------------|
-| 0-10K | <500MB | Supabase Free | $0 |
-| 10K-100K | <8GB | Supabase Pro | $25 |
-| 100K-1M | <100GB | Supabase Team | $599 |
-| 1M+ | Unlimited | Enterprise | Custom |
+| Users    | Database Size | Plan          | Cost/Month |
+| -------- | ------------- | ------------- | ---------- |
+| 0-10K    | <500MB        | Supabase Free | $0         |
+| 10K-100K | <8GB          | Supabase Pro  | $25        |
+| 100K-1M  | <100GB        | Supabase Team | $599       |
+| 1M+      | Unlimited     | Enterprise    | Custom     |
 
 ### Backup & Recovery
+
 - **Automatic Backups**: Daily (30 day retention)
 - **Point-in-time Recovery**: Last 7 days
 - **Export**: Via Supabase Dashboard
@@ -408,7 +459,7 @@ idx_fraud_logs_severity -- Security monitoring
 
 ```sql
 -- Check database health
-SELECT 
+SELECT
     (SELECT COUNT(*) FROM posts) as total_posts,
     (SELECT COUNT(*) FROM users) as total_users,
     (SELECT SUM(anonymous_likes_count) FROM posts) as total_votes,
@@ -423,32 +474,34 @@ SELECT * FROM rate_limits WHERE window_end > NOW();
 ## 📁 Project Structure
 
 ```
+
 VibeAI/
-├── app/                      # Next.js 14 App Router
-│   ├── page.tsx             # Home page with premium hero
-│   ├── gallery/             # Content gallery with filters
-│   ├── upload/              # Upload page with AI details
-│   ├── post/[id]/           # Individual post view
-│   ├── dashboard/           # User dashboard
-│   ├── sign-in/             # Clerk authentication
-│   └── sign-up/             # User registration
-├── components/              # React components
-│   ├── ui/                  # Shadcn UI components
-│   ├── PremiumHero.tsx      # Animated hero section
-│   ├── CommentSection.tsx   # Comments with real-time updates
-│   ├── ContentGrid.tsx      # Dynamic content display
-│   ├── StatsWidget.tsx      # Platform statistics
-│   └── ...                  # Other components
-├── lib/                     # Utilities and configs
-│   ├── supabase.ts         # Supabase client
-│   └── utils.ts            # Helper functions
-├── types/                   # TypeScript definitions
-│   └── database.ts         # Database types
-├── supabase/               # Database files
-│   └── schema-v2.sql      # Complete database schema
-└── docs/                   # Documentation
-    └── Ideas.md           # Vision document
-```
+├── app/ # Next.js 14 App Router
+│ ├── page.tsx # Home page with premium hero
+│ ├── gallery/ # Content gallery with filters
+│ ├── upload/ # Upload page with AI details
+│ ├── post/[id]/ # Individual post view
+│ ├── dashboard/ # User dashboard
+│ ├── sign-in/ # Clerk authentication
+│ └── sign-up/ # User registration
+├── components/ # React components
+│ ├── ui/ # Shadcn UI components
+│ ├── PremiumHero.tsx # Animated hero section
+│ ├── CommentSection.tsx # Comments with real-time updates
+│ ├── ContentGrid.tsx # Dynamic content display
+│ ├── StatsWidget.tsx # Platform statistics
+│ └── ... # Other components
+├── lib/ # Utilities and configs
+│ ├── supabase.ts # Supabase client
+│ └── utils.ts # Helper functions
+├── types/ # TypeScript definitions
+│ └── database.ts # Database types
+├── supabase/ # Database files
+│ └── schema-v2.sql # Complete database schema
+└── docs/ # Documentation
+└── Ideas.md # Vision document
+
+````
 
 ## 🎨 Features Walkthrough
 
@@ -556,22 +609,22 @@ SELECT DATE_TRUNC('day', created_at) as day,
        COUNT(*) as posts,
        SUM(view_count) as views
 FROM posts GROUP BY day;
-```
+````
 
 ### Future Infrastructure Upgrades
 
 #### When to Upgrade Each Component:
 
-| Component | Current | Upgrade Trigger | Next Step |
-|-----------|---------|----------------|-----------|
-| **Database** | Supabase Free | >500MB data | Supabase Pro |
-| **Storage** | Supabase Storage | >1GB files | S3 + CloudFront |
-| **Cache** | In-Memory | >1K req/sec | Redis |
-| **Search** | SQL LIKE | >10K posts | Elasticsearch |
-| **Queue** | None | Background jobs | BullMQ/SQS |
-| **Analytics** | Basic | >100K events/day | ClickHouse |
-| **CDN** | Vercel | Global users | CloudFlare |
-| **Monitoring** | Console logs | Production | Sentry + DataDog |
+| Component      | Current          | Upgrade Trigger  | Next Step        |
+| -------------- | ---------------- | ---------------- | ---------------- |
+| **Database**   | Supabase Free    | >500MB data      | Supabase Pro     |
+| **Storage**    | Supabase Storage | >1GB files       | S3 + CloudFront  |
+| **Cache**      | In-Memory        | >1K req/sec      | Redis            |
+| **Search**     | SQL LIKE         | >10K posts       | Elasticsearch    |
+| **Queue**      | None             | Background jobs  | BullMQ/SQS       |
+| **Analytics**  | Basic            | >100K events/day | ClickHouse       |
+| **CDN**        | Vercel           | Global users     | CloudFlare       |
+| **Monitoring** | Console logs     | Production       | Sentry + DataDog |
 
 ### API Rate Limits by Tier
 
@@ -580,35 +633,37 @@ const rateLimits = {
   anonymous: {
     votes: { max: 10, window: '1m' },
     comments: { max: 5, window: '5m' },
-    uploads: { max: 0, window: null }
+    uploads: { max: 0, window: null },
   },
   free: {
     votes: { max: 100, window: '1h' },
     comments: { max: 50, window: '1h' },
-    uploads: { max: 10, window: '1d' }
+    uploads: { max: 10, window: '1d' },
   },
   pro: {
     votes: { max: 1000, window: '1h' },
     comments: { max: 500, window: '1h' },
-    uploads: { max: 100, window: '1d' }
+    uploads: { max: 100, window: '1d' },
   },
   enterprise: {
     votes: { max: -1, window: null }, // Unlimited
     comments: { max: -1, window: null },
-    uploads: { max: -1, window: null }
-  }
+    uploads: { max: -1, window: null },
+  },
 };
 ```
 
 ## 🔮 Future Roadmap
 
 ### Phase 1: Enhanced Discovery (Q1 2024)
+
 - [ ] Advanced search with multiple filters
 - [ ] AI-powered content recommendations
 - [ ] Similar content suggestions
 - [ ] Trending hashtags algorithm
 
 ### Phase 2: Creator Tools (Q2 2024)
+
 - [ ] Built-in AI generation (subscription model)
 - [ ] Credits system for AI usage
 - [ ] Direct integration with AI providers (OpenAI, Anthropic, Midjourney)
@@ -616,6 +671,7 @@ const rateLimits = {
 - [ ] Style transfer and remix features
 
 ### Phase 3: Community Features (Q3 2024)
+
 - [ ] Creator profiles and following system
 - [ ] Collections and playlists
 - [ ] Collaboration tools
@@ -624,6 +680,7 @@ const rateLimits = {
 - [ ] Group challenges and contests
 
 ### Phase 4: Monetization (Q4 2024)
+
 - [ ] Premium subscriptions with tiers
 - [ ] Creator marketplace
 - [ ] NFT integration for unique creations
@@ -632,6 +689,7 @@ const rateLimits = {
 - [ ] API access for developers
 
 ### Phase 5: Enterprise & Scale (2025)
+
 - [ ] White-label solution
 - [ ] Multi-tenant architecture
 - [ ] Advanced analytics dashboard

@@ -23,10 +23,12 @@ export default function TopLikesPage() {
       // Query all posts
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select(`
+        .select(
+          `
           *,
           users!inner(username, avatar_url)
-        `)
+        `
+        )
         .order('created_at', { ascending: false });
 
       if (postsError) {
@@ -47,7 +49,7 @@ export default function TopLikesPage() {
             username: post.users?.username,
             avatar_url: post.users?.avatar_url,
             total_likes_count: likesCount || 0,
-            comments_count: post.comments_count || 0
+            comments_count: post.comments_count || 0,
           };
         })
       );
@@ -80,14 +82,14 @@ export default function TopLikesPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-20 pb-12">
+      <main className="container mx-auto px-4 pb-12 pt-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="mb-4 flex items-center gap-3">
             <div className="rounded-full bg-red-500/10 p-3">
               <Heart className="h-8 w-8 text-red-500" />
             </div>
@@ -95,7 +97,7 @@ export default function TopLikesPage() {
               <h1 className="text-4xl font-bold">
                 Top <span className="text-gradient">Likes</span>
               </h1>
-              <p className="text-muted-foreground flex items-center gap-2 mt-1">
+              <p className="mt-1 flex items-center gap-2 text-muted-foreground">
                 <Sparkles className="h-4 w-4" />
                 Most loved content of all time
               </p>
@@ -108,13 +110,13 @@ export default function TopLikesPage() {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-20">
-            <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <div className="py-20 text-center">
+            <Heart className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
             <p className="text-muted-foreground">No posts yet</p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <div className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
               {posts.slice(0, 3).map((post, index) => (
                 <motion.div
                   key={post.id}
@@ -123,40 +125,33 @@ export default function TopLikesPage() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="relative"
                 >
-                  <div className="absolute -top-4 -right-4 z-10">
+                  <div className="absolute -right-4 -top-4 z-10">
                     <div
                       className={`rounded-full p-3 shadow-lg ${
                         index === 0
                           ? 'bg-gradient-to-br from-yellow-400 to-yellow-600'
                           : index === 1
-                          ? 'bg-gradient-to-br from-gray-300 to-gray-500'
-                          : 'bg-gradient-to-br from-orange-400 to-orange-600'
+                            ? 'bg-gradient-to-br from-gray-300 to-gray-500'
+                            : 'bg-gradient-to-br from-orange-400 to-orange-600'
                       }`}
                     >
                       <Crown className="h-6 w-6 text-white" />
                     </div>
                   </div>
-                  
+
                   <div className="mb-3">
-                    <Badge
-                      variant={index === 0 ? 'default' : 'secondary'}
-                      className="gap-1"
-                    >
+                    <Badge variant={index === 0 ? 'default' : 'secondary'} className="gap-1">
                       <Heart className="h-3 w-3" />
                       {post.likes_count} likes
                     </Badge>
                   </div>
-                  
-                  <ContentCard
-                    post={post}
-                    onLike={handleLike}
-                    onDownload={handleDownload}
-                  />
+
+                  <ContentCard post={post} onLike={handleLike} onDownload={handleDownload} />
                 </motion.div>
               ))}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {posts.slice(3).map((post, index) => (
                 <motion.div
                   key={post.id}
@@ -164,11 +159,7 @@ export default function TopLikesPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
                 >
-                  <ContentCard
-                    post={post}
-                    onLike={handleLike}
-                    onDownload={handleDownload}
-                  />
+                  <ContentCard post={post} onLike={handleLike} onDownload={handleDownload} />
                 </motion.div>
               ))}
             </div>

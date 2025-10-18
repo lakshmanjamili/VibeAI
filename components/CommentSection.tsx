@@ -49,12 +49,16 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     // Set up real-time subscription for new comments
     const channel = supabase
       .channel(`comments-${postId}`)
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'comments',
-        filter: `post_id=eq.${postId}`
-      }, handleNewComment)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'comments',
+          filter: `post_id=eq.${postId}`,
+        },
+        handleNewComment
+      )
       .subscribe();
 
     return () => {
@@ -67,10 +71,12 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     try {
       const { data, error } = await supabase
         .from('comments')
-        .select(`
+        .select(
+          `
           *,
           users:user_id(username, avatar_url)
-        `)
+        `
+        )
         .eq('post_id', postId)
         .order('created_at', { ascending: false });
 
@@ -136,9 +142,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         commentData.anonymous_id = getAnonymousId();
       }
 
-      const { error } = await supabase
-        .from('comments')
-        .insert(commentData);
+      const { error } = await supabase.from('comments').insert(commentData);
 
       if (error) throw error;
 
@@ -150,7 +154,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         .single();
 
       const currentCount = (postData as any)?.comments_count || 0;
-      
+
       await (supabase as any)
         .from('posts')
         .update({ comments_count: currentCount + 1 })
@@ -188,7 +192,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
               onChange={(e) => setAnonymousName(e.target.value)}
               className="max-w-xs"
             />
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="mt-1 text-xs text-muted-foreground">
               Comment anonymously or sign in for more features
             </p>
           </div>
@@ -199,9 +203,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
             {isSignedIn && user ? (
               <>
                 <AvatarImage src={user.imageUrl} />
-                <AvatarFallback>
-                  {user.username?.slice(0, 2).toUpperCase() || 'U'}
-                </AvatarFallback>
+                <AvatarFallback>{user.username?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
               </>
             ) : (
               <AvatarFallback>
@@ -228,20 +230,18 @@ export default function CommentSection({ postId }: CommentSectionProps) {
       {/* Comments List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <div className="py-8 text-center">
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
           </div>
         ) : comments.length === 0 ? (
-          <div className="text-center py-8">
+          <div className="py-8 text-center">
             <p className="text-muted-foreground">No comments yet. Be the first to comment!</p>
           </div>
         ) : (
           comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <Avatar className="h-10 w-10">
-                {comment.users?.avatar_url ? (
-                  <AvatarImage src={comment.users.avatar_url} />
-                ) : null}
+                {comment.users?.avatar_url ? <AvatarImage src={comment.users.avatar_url} /> : null}
                 <AvatarFallback>
                   {comment.is_anonymous ? (
                     <User className="h-5 w-5" />
@@ -252,8 +252,8 @@ export default function CommentSection({ postId }: CommentSectionProps) {
               </Avatar>
 
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="font-semibold text-sm">
+                <div className="mb-1 flex items-center gap-2">
+                  <p className="text-sm font-semibold">
                     {comment.is_anonymous
                       ? comment.anonymous_name || 'Anonymous'
                       : comment.users?.username || 'User'}

@@ -27,10 +27,12 @@ export default function WeeklyBestPage() {
       // Query posts from last 7 days
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select(`
+        .select(
+          `
           *,
           users!inner(username, avatar_url)
-        `)
+        `
+        )
         .gte('created_at', sevenDaysAgo.toISOString())
         .order('created_at', { ascending: false });
 
@@ -52,7 +54,7 @@ export default function WeeklyBestPage() {
             username: post.users?.username,
             avatar_url: post.users?.avatar_url,
             total_likes_count: likesCount || 0,
-            comments_count: post.comments_count || 0
+            comments_count: post.comments_count || 0,
           };
         })
       );
@@ -85,14 +87,14 @@ export default function WeeklyBestPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-20 pb-12">
+      <main className="container mx-auto px-4 pb-12 pt-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="mb-4 flex items-center gap-3">
             <div className="rounded-full bg-yellow-500/10 p-3">
               <Trophy className="h-8 w-8 text-yellow-500" />
             </div>
@@ -100,7 +102,7 @@ export default function WeeklyBestPage() {
               <h1 className="text-4xl font-bold">
                 Weekly <span className="text-gradient">Best</span>
               </h1>
-              <p className="text-muted-foreground flex items-center gap-2 mt-1">
+              <p className="mt-1 flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 Top performing content from the past 7 days
               </p>
@@ -113,8 +115,8 @@ export default function WeeklyBestPage() {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-20">
-            <Trophy className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <div className="py-20 text-center">
+            <Trophy className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
             <p className="text-muted-foreground">No posts yet this week</p>
           </div>
         ) : (
@@ -127,14 +129,14 @@ export default function WeeklyBestPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="mb-8"
               >
-                <div className="flex items-center gap-4 mb-4">
+                <div className="mb-4 flex items-center gap-4">
                   <div
                     className={`rounded-full p-3 ${
                       index === 0
                         ? 'bg-yellow-500/20'
                         : index === 1
-                        ? 'bg-gray-400/20'
-                        : 'bg-orange-600/20'
+                          ? 'bg-gray-400/20'
+                          : 'bg-orange-600/20'
                     }`}
                   >
                     <Trophy
@@ -142,8 +144,8 @@ export default function WeeklyBestPage() {
                         index === 0
                           ? 'text-yellow-500'
                           : index === 1
-                          ? 'text-gray-400'
-                          : 'text-orange-600'
+                            ? 'text-gray-400'
+                            : 'text-orange-600'
                       }`}
                     />
                   </div>
@@ -151,23 +153,17 @@ export default function WeeklyBestPage() {
                     <Badge variant={index === 0 ? 'default' : 'secondary'}>
                       #{index + 1} This Week
                     </Badge>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {post.likes_count} likes
-                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">{post.likes_count} likes</p>
                   </div>
                 </div>
-                
+
                 <div className="max-w-md">
-                  <ContentCard
-                    post={post}
-                    onLike={handleLike}
-                    onDownload={handleDownload}
-                  />
+                  <ContentCard post={post} onLike={handleLike} onDownload={handleDownload} />
                 </div>
               </motion.div>
             ))}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-12">
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {posts.slice(3).map((post, index) => (
                 <motion.div
                   key={post.id}
@@ -175,11 +171,7 @@ export default function WeeklyBestPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
                 >
-                  <ContentCard
-                    post={post}
-                    onLike={handleLike}
-                    onDownload={handleDownload}
-                  />
+                  <ContentCard post={post} onLike={handleLike} onDownload={handleDownload} />
                 </motion.div>
               ))}
             </div>

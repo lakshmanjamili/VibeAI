@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { 
-  getClientIp, 
-  hashIp, 
-  checkRateLimit, 
+import {
+  getClientIp,
+  hashIp,
+  checkRateLimit,
   generateFingerprint,
   analyzeBehavior,
   verifyCaptcha,
   verifyProofOfWork,
   validateHoneypot,
-  verifyTimeChallenge
+  verifyTimeChallenge,
 } from '@/lib/antiSpam';
 
 // Store for tracking behavior (use Redis in production)
@@ -27,15 +27,12 @@ export async function POST(req: NextRequest) {
       honeypot,
       timeChallenge,
       timestamp,
-      actionLog
+      actionLog,
     } = body;
 
     // 🛡️ Layer 1: Basic Validation
     if (!postId || !sessionId) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     // 🛡️ Layer 2: Honeypot Check
@@ -48,18 +45,18 @@ export async function POST(req: NextRequest) {
     // 🛡️ Layer 3: IP-based Rate Limiting
     const clientIp = getClientIp();
     const hashedIp = hashIp(clientIp);
-    
+
     const ipRateLimit = checkRateLimit(
       `ip:${hashedIp}`,
       30, // 30 votes per IP
       60000 * 5 // per 5 minutes
     );
-    
+
     if (!ipRateLimit.allowed) {
       return NextResponse.json(
-        { 
+        {
           error: 'Too many requests from this IP',
-          retryAfter: ipRateLimit.resetTime
+          retryAfter: ipRateLimit.resetTime,
         },
         { status: 429 }
       );
@@ -71,12 +68,12 @@ export async function POST(req: NextRequest) {
       10, // 10 votes per session
       60000 // per minute
     );
-    
+
     if (!sessionRateLimit.allowed) {
       return NextResponse.json(
-        { 
+        {
           error: 'Too many requests',
-          retryAfter: sessionRateLimit.resetTime
+          retryAfter: sessionRateLimit.resetTime,
         },
         { status: 429 }
       );
@@ -84,7 +81,7 @@ export async function POST(req: NextRequest) {
 
     // 🛡️ Layer 5: Device Fingerprint Check
     const fingerprintHash = generateFingerprint(fingerprint);
-    
+
     // Check if this fingerprint has been used with different sessions recently
     const { data: recentFingerprints } = await supabase
       .from('anonymous_likes')
@@ -92,16 +89,16 @@ export async function POST(req: NextRequest) {
       .eq('device_fingerprint', fingerprintHash)
       .gte('created_at', new Date(Date.now() - 60000 * 10).toISOString()) // Last 10 minutes
       .limit(10);
-    
+
     const uniqueSessions = new Set(recentFingerprints?.map((r: any) => r.session_id) || []);
     if (uniqueSessions.size > 3) {
       console.warn('Multiple sessions from same device:', fingerprintHash);
       // Require CAPTCHA for suspicious activity
       if (!captchaToken) {
         return NextResponse.json(
-          { 
+          {
             error: 'Verification required',
-            requireCaptcha: true
+            requireCaptcha: true,
           },
           { status: 403 }
         );
@@ -111,25 +108,28 @@ export async function POST(req: NextRequest) {
     // 🛡️ Layer 6: Behavioral Analysis
     if (actionLog && actionLog.length > 0) {
       const behaviorAnalysis = analyzeBehavior(actionLog);
-      
+
       if (behaviorAnalysis.isBot) {
         console.warn('Bot behavior detected:', {
           sessionId,
           confidence: behaviorAnalysis.confidence,
-          reasons: behaviorAnalysis.reasons
+          reasons: behaviorAnalysis.reasons,
         });
-        
+
         // Require proof of work for suspicious behavior
-        if (!proofOfWork || !verifyProofOfWork(
-          proofOfWork.challenge,
-          proofOfWork.solution,
-          proofOfWork.expectedPrefix
-        )) {
+        if (
+          !proofOfWork ||
+          !verifyProofOfWork(
+            proofOfWork.challenge,
+            proofOfWork.solution,
+            proofOfWork.expectedPrefix
+          )
+        ) {
           return NextResponse.json(
-            { 
+            {
               error: 'Verification required',
               requireProofOfWork: true,
-              challenge: proofOfWork?.challenge
+              challenge: proofOfWork?.challenge,
             },
             { status: 403 }
           );
@@ -140,20 +140,14 @@ export async function POST(req: NextRequest) {
     // 🛡️ Layer 7: Time Challenge Verification
     if (timeChallenge && !verifyTimeChallenge(timeChallenge.token, timestamp)) {
       console.warn('Time challenge failed:', sessionId);
-      return NextResponse.json(
-        { error: 'Invalid request timing' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Invalid request timing' }, { status: 403 });
     }
 
     // 🛡️ Layer 8: CAPTCHA Verification (if required)
     if (captchaToken) {
       const captchaValid = await verifyCaptcha(captchaToken);
       if (!captchaValid) {
-        return NextResponse.json(
-          { error: 'CAPTCHA verification failed' },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: 'CAPTCHA verification failed' }, { status: 403 });
       }
     }
 
@@ -164,19 +158,19 @@ export async function POST(req: NextRequest) {
       .eq('post_id', postId)
       .gte('created_at', new Date(Date.now() - 60000 * 5).toISOString()) // Last 5 minutes
       .limit(100);
-    
+
     if (recentVotes && recentVotes.length > 50) {
       // Suspicious spike in votes
       console.warn('Vote spike detected for post:', postId);
-      
+
       // Check IP diversity
       const uniqueIps = new Set(recentVotes.map((v: any) => v.ip_hash));
       if (uniqueIps.size < 10) {
         // Less than 10 unique IPs for 50+ votes is suspicious
         return NextResponse.json(
-          { 
+          {
             error: 'Unusual voting pattern detected',
-            requireCaptcha: true
+            requireCaptcha: true,
           },
           { status: 403 }
         );
@@ -187,15 +181,12 @@ export async function POST(req: NextRequest) {
     const { data, error } = await (supabase.rpc as any)('toggle_anonymous_like', {
       p_post_id: postId,
       p_session_id: sessionId,
-      p_ip_hash: hashedIp
+      p_ip_hash: hashedIp,
     });
 
     if (error) {
       console.error('Database error:', error);
-      return NextResponse.json(
-        { error: 'Failed to process vote' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to process vote' }, { status: 500 });
     }
 
     // Store behavior for future analysis
@@ -204,7 +195,7 @@ export async function POST(req: NextRequest) {
       timestamp: Date.now(),
       action: 'vote',
       postId,
-      success: true
+      success: true,
     });
     behaviorStore.set(sessionId, behaviors);
 
@@ -214,15 +205,11 @@ export async function POST(req: NextRequest) {
       liked: data,
       rateLimit: {
         remaining: Math.min(ipRateLimit.remaining, sessionRateLimit.remaining),
-        resetTime: Math.max(ipRateLimit.resetTime, sessionRateLimit.resetTime)
-      }
+        resetTime: Math.max(ipRateLimit.resetTime, sessionRateLimit.resetTime),
+      },
     });
-
   } catch (error) {
     console.error('Vote API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

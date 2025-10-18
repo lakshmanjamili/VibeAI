@@ -21,9 +21,7 @@ export default function GalleryPage() {
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
-      let query = supabase
-        .from('posts_with_metrics')
-        .select('*');
+      let query = supabase.from('posts_with_metrics').select('*');
 
       if (category !== 'all') {
         query = query.eq('category', category);
@@ -71,12 +69,12 @@ export default function GalleryPage() {
     }
 
     try {
-      const { data: existingLike } = await supabase
+      const { data: existingLike } = (await supabase
         .from('likes')
         .select('id')
         .eq('post_id', postId)
         .eq('user_id', userId)
-        .maybeSingle() as { data: { id: string } | null };
+        .maybeSingle()) as { data: { id: string } | null };
 
       if (existingLike) {
         await supabase.from('likes').delete().eq('id', existingLike.id);
@@ -105,9 +103,9 @@ export default function GalleryPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-20 pb-12">
+      <main className="container mx-auto px-4 pb-12 pt-20">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">
+          <h1 className="mb-4 text-4xl font-bold">
             Explore <span className="text-gradient">Gallery</span>
           </h1>
           <p className="text-muted-foreground">
@@ -122,11 +120,11 @@ export default function GalleryPage() {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="py-20 text-center">
             <p className="text-muted-foreground">No posts found. Be the first to share!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {posts.map((post) => (
               <ContentCard
                 key={post.id}

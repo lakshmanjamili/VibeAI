@@ -6,16 +6,16 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PostWithMetrics } from '@/types/database';
-import { 
-  Heart, 
-  Eye, 
-  Download, 
+import {
+  Heart,
+  Eye,
+  Download,
   MessageCircle,
   Film,
   Video,
   BookOpen,
   ImageIcon,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -28,21 +28,31 @@ interface PostCardProps {
 export default function PostCard({ post, index = 0 }: PostCardProps) {
   const getCategoryIcon = () => {
     switch (post.category) {
-      case 'photo': return <ImageIcon className="h-4 w-4" />;
-      case 'video': return <Video className="h-4 w-4" />;
-      case 'gif': return <Film className="h-4 w-4" />;
-      case 'storybook': return <BookOpen className="h-4 w-4" />;
-      default: return null;
+      case 'photo':
+        return <ImageIcon className="h-4 w-4" />;
+      case 'video':
+        return <Video className="h-4 w-4" />;
+      case 'gif':
+        return <Film className="h-4 w-4" />;
+      case 'storybook':
+        return <BookOpen className="h-4 w-4" />;
+      default:
+        return null;
     }
   };
 
   const getCategoryColor = () => {
     switch (post.category) {
-      case 'photo': return 'bg-blue-500/10 text-blue-500';
-      case 'video': return 'bg-purple-500/10 text-purple-500';
-      case 'gif': return 'bg-green-500/10 text-green-500';
-      case 'storybook': return 'bg-orange-500/10 text-orange-500';
-      default: return 'bg-gray-500/10 text-gray-500';
+      case 'photo':
+        return 'bg-blue-500/10 text-blue-500';
+      case 'video':
+        return 'bg-purple-500/10 text-purple-500';
+      case 'gif':
+        return 'bg-green-500/10 text-green-500';
+      case 'storybook':
+        return 'bg-orange-500/10 text-orange-500';
+      default:
+        return 'bg-gray-500/10 text-gray-500';
     }
   };
 
@@ -51,12 +61,12 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
     if (post.thumbnail_url) {
       return post.thumbnail_url;
     }
-    
+
     // For photos and GIFs, use the file URL directly
     if (post.category === 'photo' || post.category === 'gif') {
       return post.file_url;
     }
-    
+
     // For videos and storybooks, return null to show icon placeholder
     return null;
   };
@@ -68,21 +78,21 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
       transition={{ duration: 0.4, delay: index * 0.1 }}
     >
       <Link href={`/post/${post.id}`}>
-        <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full">
+        <Card className="h-full overflow-hidden transition-shadow duration-300 hover:shadow-lg">
           {/* Thumbnail */}
-          <div className="aspect-square relative overflow-hidden bg-secondary">
+          <div className="relative aspect-square overflow-hidden bg-secondary">
             {getThumbnail() ? (
               <img
                 src={getThumbnail()!}
                 alt={post.title}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
               />
             ) : post.category === 'video' && post.file_url ? (
               // For videos without thumbnails, show video element with first frame
-              <div className="relative w-full h-full">
+              <div className="relative h-full w-full">
                 <video
                   src={post.file_url}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                   muted
                   playsInline
                   preload="metadata"
@@ -94,13 +104,13 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
                 </div>
               </div>
             ) : (
-              <div className="w-full h-full flex items-center justify-center">
+              <div className="flex h-full w-full items-center justify-center">
                 {getCategoryIcon()}
               </div>
             )}
-            
+
             {/* Category Badge */}
-            <div className="absolute top-2 left-2">
+            <div className="absolute left-2 top-2">
               <Badge className={`${getCategoryColor()} gap-1`}>
                 {getCategoryIcon()}
                 {post.category}
@@ -109,7 +119,7 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
 
             {/* AI Badge */}
             {post.ai_model && (
-              <div className="absolute top-2 right-2">
+              <div className="absolute right-2 top-2">
                 <Badge variant="secondary" className="gap-1">
                   <Sparkles className="h-3 w-3" />
                   AI
@@ -119,7 +129,7 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
 
             {/* Stats Overlay */}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-              <div className="flex items-center gap-3 text-white text-sm">
+              <div className="flex items-center gap-3 text-sm text-white">
                 <span className="flex items-center gap-1">
                   <Heart className="h-3 w-3 fill-current" />
                   {post.total_likes_count || 0}
@@ -144,27 +154,23 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
 
           {/* Content */}
           <CardHeader className="pb-3">
-            <h3 className="font-semibold line-clamp-2 hover:text-primary transition-colors">
+            <h3 className="line-clamp-2 font-semibold transition-colors hover:text-primary">
               {post.title}
             </h3>
             {post.description && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                {post.description}
-              </p>
+              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{post.description}</p>
             )}
           </CardHeader>
 
           {/* Footer */}
           <CardFooter className="pt-0">
-            <div className="flex items-center justify-between w-full">
+            <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
                 <Avatar className="h-6 w-6">
                   <AvatarImage src={post.avatar_url || ''} />
                   <AvatarFallback>{post.username?.[0]?.toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <span className="text-sm text-muted-foreground">
-                  {post.username}
-                </span>
+                <span className="text-sm text-muted-foreground">{post.username}</span>
               </div>
               <span className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}

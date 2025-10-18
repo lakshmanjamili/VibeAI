@@ -11,12 +11,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { PostCategory, AIModel } from '@/types/database';
-import { Upload, Loader2, Film, Video, BookOpen, ImageIcon, Wand2, Hash, X, Info, ShieldCheck } from 'lucide-react';
+import {
+  Upload,
+  Loader2,
+  Film,
+  Video,
+  BookOpen,
+  ImageIcon,
+  Wand2,
+  Hash,
+  X,
+  Info,
+  ShieldCheck,
+} from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
 // File upload configuration
@@ -24,17 +42,55 @@ const FILE_SIZE_LIMIT = 500 * 1024 * 1024; // 500MB for larger video files
 const MAX_HASHTAGS = 10;
 const ALLOWED_MIME_TYPES = {
   gif: ['.gif'],
-  video: ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.m4v', '.wmv', '.flv', '.3gp', '.mpg', '.mpeg', '.ogv', '.ogg'],
+  video: [
+    '.mp4',
+    '.webm',
+    '.mov',
+    '.avi',
+    '.mkv',
+    '.m4v',
+    '.wmv',
+    '.flv',
+    '.3gp',
+    '.mpg',
+    '.mpeg',
+    '.ogv',
+    '.ogg',
+  ],
   storybook: ['.pdf', '.epub', '.txt', '.doc', '.docx'],
-  photo: ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg', '.bmp', '.ico', '.tiff', '.tif', '.heic', '.heif', '.raw'],
+  photo: [
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.webp',
+    '.avif',
+    '.svg',
+    '.bmp',
+    '.ico',
+    '.tiff',
+    '.tif',
+    '.heic',
+    '.heif',
+    '.raw',
+  ],
 };
 
 // Category configuration
 const CATEGORY_CONFIG = [
   { value: 'gif' as PostCategory, label: 'GIF', icon: Film, accept: ALLOWED_MIME_TYPES.gif },
   { value: 'video' as PostCategory, label: 'Video', icon: Video, accept: ALLOWED_MIME_TYPES.video },
-  { value: 'storybook' as PostCategory, label: 'Storybook', icon: BookOpen, accept: ALLOWED_MIME_TYPES.storybook },
-  { value: 'photo' as PostCategory, label: 'Photo', icon: ImageIcon, accept: ALLOWED_MIME_TYPES.photo },
+  {
+    value: 'storybook' as PostCategory,
+    label: 'Storybook',
+    icon: BookOpen,
+    accept: ALLOWED_MIME_TYPES.storybook,
+  },
+  {
+    value: 'photo' as PostCategory,
+    label: 'Photo',
+    icon: ImageIcon,
+    accept: ALLOWED_MIME_TYPES.photo,
+  },
 ];
 
 // Helper functions
@@ -48,7 +104,7 @@ const generateStoragePath = (category: PostCategory, userId: string, filename: s
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const timestamp = Date.now();
   const sanitizedFilename = sanitizeFilename(filename);
-  
+
   return `${year}/${month}/${category}/${userId}/${timestamp}_${sanitizedFilename}`;
 };
 
@@ -62,21 +118,22 @@ export default function UploadPage() {
   const router = useRouter();
   const { userId, isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
-  
+
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<PostCategory>('photo');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>('');
-  
+  const [aiGeneratedUrl, setAiGeneratedUrl] = useState<string>('');
+
   // AI Generation state
   const [aiModel, setAiModel] = useState<string>('');
   const [prompt, setPrompt] = useState('');
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState('');
   const [aiModels, setAiModels] = useState<AIModel[]>([]);
-  
+
   // Upload state
   const [uploadState, setUploadState] = useState<UploadState>({
     loading: false,
@@ -91,6 +148,36 @@ export default function UploadPage() {
     }
   }, [isLoaded, isSignedIn, router]);
 
+  // Handle AI-generated content from URL params
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const isAiGenerated = searchParams.get('ai_generated');
+    const url = searchParams.get('url');
+    const aiPrompt = searchParams.get('prompt');
+    const model = searchParams.get('model');
+
+    if (isAiGenerated === 'true' && url) {
+      setAiGeneratedUrl(url);
+      setPreview(url);
+      setPrompt(aiPrompt || '');
+      setAiModel(model || '');
+
+      // Auto-generate title from prompt
+      if (aiPrompt) {
+        setTitle(aiPrompt.substring(0, 50) + (aiPrompt.length > 50 ? '...' : ''));
+      }
+
+      // Detect category from model
+      if (model?.includes('veo')) {
+        setCategory('video');
+      } else if (model?.includes('gif')) {
+        setCategory('gif');
+      } else {
+        setCategory('photo');
+      }
+    }
+  }, []);
+
   // Fetch AI models and test connection
   useEffect(() => {
     const testConnection = async () => {
@@ -100,7 +187,7 @@ export default function UploadPage() {
           .from('users')
           .select('count')
           .limit(1);
-        
+
         if (testError) {
           console.error('Supabase connection test failed:', testError);
           toast({
@@ -123,7 +210,7 @@ export default function UploadPage() {
           .select('*')
           .eq('is_active', true)
           .order('name');
-        
+
         if (error) {
           console.error('Error fetching AI models:', error);
           // Continue without AI models - they're optional
@@ -144,7 +231,7 @@ export default function UploadPage() {
   // Hashtag management
   const addHashtag = () => {
     const tag = hashtagInput.trim().toLowerCase().replace(/^#/, '');
-    
+
     if (!tag) return;
     if (hashtags.includes(tag)) {
       toast({
@@ -162,13 +249,13 @@ export default function UploadPage() {
       });
       return;
     }
-    
+
     setHashtags([...hashtags, tag]);
     setHashtagInput('');
   };
 
   const removeHashtag = (tagToRemove: string) => {
-    setHashtags(hashtags.filter(tag => tag !== tagToRemove));
+    setHashtags(hashtags.filter((tag) => tag !== tagToRemove));
   };
 
   const handleHashtagKeyPress = (e: React.KeyboardEvent) => {
@@ -181,9 +268,9 @@ export default function UploadPage() {
   // File handling
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
-    
+
     const file = acceptedFiles[0];
-    
+
     // Validate file size
     if (file.size > FILE_SIZE_LIMIT) {
       toast({
@@ -193,10 +280,10 @@ export default function UploadPage() {
       });
       return;
     }
-    
+
     setFile(file);
     setUploadState({ ...uploadState, error: null });
-    
+
     // Generate preview for images
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
@@ -213,32 +300,47 @@ export default function UploadPage() {
     onDrop,
     maxFiles: 1,
     maxSize: FILE_SIZE_LIMIT,
-    accept: CATEGORY_CONFIG.find(c => c.value === category)?.accept.reduce((acc, ext) => {
-      const mimeType = ext === '.gif' ? 'image/gif' :
-                      ext === '.mp4' ? 'video/mp4' :
-                      ext === '.webm' ? 'video/webm' :
-                      ext === '.mov' ? 'video/quicktime' :
-                      ext === '.pdf' ? 'application/pdf' :
-                      ext === '.epub' ? 'application/epub+zip' :
-                      ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg' :
-                      ext === '.png' ? 'image/png' :
-                      ext === '.webp' ? 'image/webp' : '';
-      if (mimeType) acc[mimeType] = [ext];
-      return acc;
-    }, {} as Record<string, string[]>),
+    accept: CATEGORY_CONFIG.find((c) => c.value === category)?.accept.reduce(
+      (acc, ext) => {
+        const mimeType =
+          ext === '.gif'
+            ? 'image/gif'
+            : ext === '.mp4'
+              ? 'video/mp4'
+              : ext === '.webm'
+                ? 'video/webm'
+                : ext === '.mov'
+                  ? 'video/quicktime'
+                  : ext === '.pdf'
+                    ? 'application/pdf'
+                    : ext === '.epub'
+                      ? 'application/epub+zip'
+                      : ext === '.jpg' || ext === '.jpeg'
+                        ? 'image/jpeg'
+                        : ext === '.png'
+                          ? 'image/png'
+                          : ext === '.webp'
+                            ? 'image/webp'
+                            : '';
+        if (mimeType) acc[mimeType] = [ext];
+        return acc;
+      },
+      {} as Record<string, string[]>
+    ),
   });
 
   // Form validation
   const validateForm = (): boolean => {
-    if (!file) {
+    // For AI-generated content, we don't need a file
+    if (!aiGeneratedUrl && !file) {
       toast({
         title: 'No file selected',
-        description: 'Please select a file to upload',
+        description: 'Please select a file or generate content with AI',
         variant: 'destructive',
       });
       return false;
     }
-    
+
     if (!title.trim()) {
       toast({
         title: 'Title required',
@@ -247,7 +349,7 @@ export default function UploadPage() {
       });
       return false;
     }
-    
+
     if (title.length > 100) {
       toast({
         title: 'Title too long',
@@ -256,7 +358,7 @@ export default function UploadPage() {
       });
       return false;
     }
-    
+
     if (description.length > 500) {
       toast({
         title: 'Description too long',
@@ -265,7 +367,7 @@ export default function UploadPage() {
       });
       return false;
     }
-    
+
     if (prompt.length > 2000) {
       toast({
         title: 'Prompt too long',
@@ -274,7 +376,7 @@ export default function UploadPage() {
       });
       return false;
     }
-    
+
     return true;
   };
 
@@ -282,7 +384,7 @@ export default function UploadPage() {
   const ensureUserExists = async (userId: string): Promise<string | null> => {
     try {
       console.log('Checking for existing user with clerk_id:', userId);
-      
+
       // Check if user exists
       const { data: existingUser, error: selectError } = await supabase
         .from('users')
@@ -322,9 +424,9 @@ export default function UploadPage() {
           message: insertError.message,
           details: insertError.details,
           hint: insertError.hint,
-          code: insertError.code
+          code: insertError.code,
         });
-        
+
         // If it's a unique constraint error, try to fetch the user again
         if (insertError.code === '23505') {
           console.log('User might already exist, trying to fetch again...');
@@ -333,13 +435,13 @@ export default function UploadPage() {
             .select('id')
             .eq('clerk_id', userId)
             .single();
-          
+
           if ((retryUser as any)?.id) {
             console.log('Found user on retry:', (retryUser as any).id);
             return (retryUser as any).id;
           }
         }
-        
+
         throw insertError;
       }
 
@@ -347,7 +449,7 @@ export default function UploadPage() {
       return newUser?.id || null;
     } catch (error) {
       console.error('Error in ensureUserExists:', error);
-      
+
       if (error instanceof Error) {
         throw new Error(`User account error: ${error.message}`);
       } else {
@@ -358,18 +460,16 @@ export default function UploadPage() {
 
   // Upload file to storage
   const uploadFile = async (file: File, path: string): Promise<string> => {
-    const { data, error } = await supabase.storage
-      .from('posts')
-      .upload(path, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
+    const { data, error } = await supabase.storage.from('posts').upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
 
     if (error) throw error;
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('posts')
-      .getPublicUrl(path);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('posts').getPublicUrl(path);
 
     return publicUrl;
   };
@@ -428,7 +528,17 @@ export default function UploadPage() {
       return;
     }
 
-    if (!validateForm() || !file) return;
+    // For AI-generated content, we don't need a file
+    if (!aiGeneratedUrl && !file) {
+      toast({
+        title: 'No content to upload',
+        description: 'Please select a file or generate content with AI',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!validateForm()) return;
 
     setUploadState({
       loading: true,
@@ -438,31 +548,41 @@ export default function UploadPage() {
 
     try {
       // Step 1: Ensure user exists (10-20%)
-      setUploadState(prev => ({ ...prev, progress: 20 }));
+      setUploadState((prev) => ({ ...prev, progress: 20 }));
       const dbUserId = await ensureUserExists(userId);
       if (!dbUserId) throw new Error('Failed to get user ID');
 
-      // Step 2: Upload file (20-60%)
-      setUploadState(prev => ({ ...prev, progress: 40 }));
-      const storagePath = generateStoragePath(category, dbUserId, file.name);
-      const fileUrl = await uploadFile(file, storagePath);
-      
+      // Step 2: Upload file or use AI-generated URL (20-60%)
+      setUploadState((prev) => ({ ...prev, progress: 40 }));
+      let fileUrl: string;
+
+      if (aiGeneratedUrl) {
+        // Use the AI-generated URL directly
+        fileUrl = aiGeneratedUrl;
+      } else if (file) {
+        // Upload the file
+        const storagePath = generateStoragePath(category, dbUserId, file.name);
+        fileUrl = await uploadFile(file, storagePath);
+      } else {
+        throw new Error('No content to upload');
+      }
+
       // Step 3: Generate thumbnail URL (60-70%)
-      setUploadState(prev => ({ ...prev, progress: 70 }));
-      const thumbnailUrl = (category === 'photo' || category === 'gif') ? fileUrl : null;
+      setUploadState((prev) => ({ ...prev, progress: 70 }));
+      const thumbnailUrl = category === 'photo' || category === 'gif' ? fileUrl : null;
 
       // Step 4: Create post record (70-85%)
-      setUploadState(prev => ({ ...prev, progress: 85 }));
+      setUploadState((prev) => ({ ...prev, progress: 85 }));
       const postId = await createPost(dbUserId, fileUrl, thumbnailUrl);
       if (!postId) throw new Error('Failed to create post');
 
       // Step 5: Add hashtags (85-95%)
-      setUploadState(prev => ({ ...prev, progress: 95 }));
+      setUploadState((prev) => ({ ...prev, progress: 95 }));
       await addHashtagsToPost(postId, hashtags);
 
       // Step 6: Success (95-100%)
-      setUploadState(prev => ({ ...prev, progress: 100 }));
-      
+      setUploadState((prev) => ({ ...prev, progress: 100 }));
+
       toast({
         title: 'Upload successful!',
         description: 'Your content has been uploaded and is now live',
@@ -472,15 +592,15 @@ export default function UploadPage() {
       router.push(`/post/${postId}`);
     } catch (error) {
       console.error('Upload error:', error);
-      
+
       const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-      
+
       setUploadState({
         loading: false,
         progress: 0,
         error: errorMessage,
       });
-      
+
       toast({
         title: 'Upload failed',
         description: errorMessage,
@@ -492,7 +612,7 @@ export default function UploadPage() {
   // Loading state
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
@@ -503,22 +623,17 @@ export default function UploadPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="flex min-h-[80vh] items-center justify-center">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <ShieldCheck className="h-6 w-6 text-primary" />
                 <CardTitle>Authentication Required</CardTitle>
               </div>
-              <CardDescription>
-                Please sign in to upload content to VibeAI
-              </CardDescription>
+              <CardDescription>Please sign in to upload content to VibeAI</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button
-                className="w-full"
-                onClick={() => router.push('/sign-in?redirect=/upload')}
-              >
+              <Button className="w-full" onClick={() => router.push('/sign-in?redirect=/upload')}>
                 Sign In to Continue
               </Button>
             </CardContent>
@@ -531,11 +646,11 @@ export default function UploadPage() {
 
   // Main upload interface
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-purple-950/30 dark:via-slate-900 dark:to-blue-950/30">
       <Navbar />
-      <main className="container mx-auto px-4 pt-20 pb-12">
-        <div className="max-w-2xl mx-auto">
-          <Card>
+      <main className="container mx-auto px-4 pb-12 pt-20">
+        <div className="mx-auto max-w-2xl">
+          <Card className="border-2 bg-white/95 shadow-xl backdrop-blur-sm dark:bg-slate-900/95">
             <CardHeader>
               <CardTitle className="text-2xl">Upload Content</CardTitle>
               <CardDescription>
@@ -556,9 +671,7 @@ export default function UploadPage() {
                   maxLength={100}
                   disabled={uploadState.loading}
                 />
-                <p className="text-xs text-muted-foreground">
-                  {title.length}/100 characters
-                </p>
+                <p className="text-xs text-muted-foreground">{title.length}/100 characters</p>
               </div>
 
               {/* Description Input */}
@@ -573,9 +686,7 @@ export default function UploadPage() {
                   rows={3}
                   disabled={uploadState.loading}
                 />
-                <p className="text-xs text-muted-foreground">
-                  {description.length}/500 characters
-                </p>
+                <p className="text-xs text-muted-foreground">{description.length}/500 characters</p>
               </div>
 
               {/* Category Selection */}
@@ -583,8 +694,8 @@ export default function UploadPage() {
                 <Label htmlFor="category">
                   Category <span className="text-destructive">*</span>
                 </Label>
-                <Select 
-                  value={category} 
+                <Select
+                  value={category}
                   onValueChange={(value) => setCategory(value as PostCategory)}
                   disabled={uploadState.loading}
                 >
@@ -608,21 +719,17 @@ export default function UploadPage() {
               </div>
 
               {/* AI Generation Details */}
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+                <div className="mb-2 flex items-center gap-2">
                   <Wand2 className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">AI Generation Details</h3>
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </div>
-                
+
                 {/* AI Model Selection */}
                 <div className="space-y-2">
                   <Label htmlFor="aiModel">AI Model Used</Label>
-                  <Select 
-                    value={aiModel} 
-                    onValueChange={setAiModel}
-                    disabled={uploadState.loading}
-                  >
+                  <Select value={aiModel} onValueChange={setAiModel} disabled={uploadState.loading}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select the AI model (optional)" />
                     </SelectTrigger>
@@ -718,31 +825,27 @@ export default function UploadPage() {
                 </Label>
                 <div
                   {...getRootProps()}
-                  className={`
-                    border-2 border-dashed rounded-lg p-8 text-center transition-colors
-                    ${uploadState.loading ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
-                  `}
+                  className={`rounded-lg border-2 border-dashed p-8 text-center transition-colors ${uploadState.loading ? 'pointer-events-none opacity-50' : 'cursor-pointer'} ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'} `}
                 >
                   <input {...getInputProps()} disabled={uploadState.loading} />
-                  
+
                   {preview ? (
                     <div className="space-y-4">
-                      <img 
-                        src={preview} 
-                        alt="Preview" 
-                        className="max-h-64 mx-auto rounded-lg object-contain" 
+                      <img
+                        src={preview}
+                        alt="Preview"
+                        className="mx-auto max-h-64 rounded-lg object-contain"
                       />
                       <p className="text-sm text-muted-foreground">{file?.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {(file?.size || 0) / (1024 * 1024) < 1 
+                        {(file?.size || 0) / (1024 * 1024) < 1
                           ? `${((file?.size || 0) / 1024).toFixed(2)} KB`
                           : `${((file?.size || 0) / (1024 * 1024)).toFixed(2)} MB`}
                       </p>
                     </div>
                   ) : file ? (
                     <div className="space-y-4">
-                      <Video className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <Video className="mx-auto h-12 w-12 text-muted-foreground" />
                       <p className="text-sm font-medium">{file.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB
@@ -750,16 +853,17 @@ export default function UploadPage() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <Upload className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
                       <div>
                         <p className="text-sm font-medium">
                           {isDragActive ? 'Drop the file here' : 'Drag & drop or click to upload'}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           Max file size: {FILE_SIZE_LIMIT / (1024 * 1024)}MB
                         </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Accepted formats: {CATEGORY_CONFIG.find(c => c.value === category)?.accept.join(', ')}
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Accepted formats:{' '}
+                          {CATEGORY_CONFIG.find((c) => c.value === category)?.accept.join(', ')}
                         </p>
                       </div>
                     </div>
@@ -769,7 +873,7 @@ export default function UploadPage() {
 
               {/* Error Display */}
               {uploadState.error && (
-                <div className="p-4 border border-destructive rounded-lg bg-destructive/10">
+                <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
                   <p className="text-sm text-destructive">{uploadState.error}</p>
                 </div>
               )}
@@ -777,13 +881,13 @@ export default function UploadPage() {
               {/* Progress Bar */}
               {uploadState.loading && uploadState.progress > 0 && (
                 <div className="space-y-2">
-                  <div className="w-full bg-secondary rounded-full h-2">
-                    <div 
-                      className="bg-primary h-2 rounded-full transition-all duration-300"
+                  <div className="h-2 w-full rounded-full bg-secondary">
+                    <div
+                      className="h-2 rounded-full bg-primary transition-all duration-300"
                       style={{ width: `${uploadState.progress}%` }}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-center">
+                  <p className="text-center text-xs text-muted-foreground">
                     Uploading... {uploadState.progress}%
                   </p>
                 </div>
@@ -792,7 +896,7 @@ export default function UploadPage() {
               {/* Upload Button */}
               <Button
                 onClick={handleUpload}
-                disabled={uploadState.loading || !file || !title.trim()}
+                disabled={uploadState.loading || (!file && !aiGeneratedUrl) || !title.trim()}
                 className="w-full"
                 size="lg"
               >

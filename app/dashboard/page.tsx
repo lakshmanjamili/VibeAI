@@ -15,11 +15,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { PostWithMetrics } from '@/types/database';
-import { 
-  LayoutGrid, 
-  Heart, 
-  Download, 
-  Eye, 
+import {
+  LayoutGrid,
+  Heart,
+  Download,
+  Eye,
   MessageCircle,
   TrendingUp,
   Calendar,
@@ -29,7 +29,7 @@ import {
   Hash,
   Trash2,
   Edit,
-  MoreVertical
+  MoreVertical,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -110,19 +110,22 @@ export default function DashboardPage() {
 
       // Calculate stats
       if (postsData) {
-        const totalStats = postsData.reduce((acc: any, post: any) => ({
-          totalPosts: acc.totalPosts + 1,
-          totalLikes: acc.totalLikes + (post.total_likes_count || 0),
-          totalViews: acc.totalViews + (post.view_count || 0),
-          totalDownloads: acc.totalDownloads + (post.download_count || 0),
-          totalComments: acc.totalComments + (post.comments_count || 0),
-        }), {
-          totalPosts: 0,
-          totalLikes: 0,
-          totalViews: 0,
-          totalDownloads: 0,
-          totalComments: 0,
-        });
+        const totalStats = postsData.reduce(
+          (acc: any, post: any) => ({
+            totalPosts: acc.totalPosts + 1,
+            totalLikes: acc.totalLikes + (post.total_likes_count || 0),
+            totalViews: acc.totalViews + (post.view_count || 0),
+            totalDownloads: acc.totalDownloads + (post.download_count || 0),
+            totalComments: acc.totalComments + (post.comments_count || 0),
+          }),
+          {
+            totalPosts: 0,
+            totalLikes: 0,
+            totalViews: 0,
+            totalDownloads: 0,
+            totalComments: 0,
+          }
+        );
         setStats(totalStats);
       }
     } catch (error) {
@@ -141,10 +144,7 @@ export default function DashboardPage() {
     if (!deletePostId) return;
 
     try {
-      const { error } = await supabase
-        .from('posts')
-        .delete()
-        .eq('id', deletePostId);
+      const { error } = await supabase.from('posts').delete().eq('id', deletePostId);
 
       if (error) throw error;
 
@@ -187,20 +187,18 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-20 pb-12">
+      <main className="container mx-auto px-4 pb-12 pt-20">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
                 <AvatarImage src={user?.imageUrl} />
-                <AvatarFallback>
-                  {user?.username?.slice(0, 2).toUpperCase() || 'U'}
-                </AvatarFallback>
+                <AvatarFallback>{user?.username?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
               </Avatar>
               <div>
                 <h1 className="text-3xl font-bold">{user?.username || 'My Dashboard'}</h1>
-                <p className="text-muted-foreground mt-1">
+                <p className="mt-1 text-muted-foreground">
                   Manage your creative content and track performance
                 </p>
               </div>
@@ -213,7 +211,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
@@ -221,9 +219,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalPosts}</div>
-              <p className="text-xs text-muted-foreground">
-                Content uploaded
-              </p>
+              <p className="text-xs text-muted-foreground">Content uploaded</p>
             </CardContent>
           </Card>
 
@@ -234,9 +230,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalLikes}</div>
-              <p className="text-xs text-muted-foreground">
-                From all posts
-              </p>
+              <p className="text-xs text-muted-foreground">From all posts</p>
             </CardContent>
           </Card>
 
@@ -247,9 +241,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalViews}</div>
-              <p className="text-xs text-muted-foreground">
-                Content views
-              </p>
+              <p className="text-xs text-muted-foreground">Content views</p>
             </CardContent>
           </Card>
 
@@ -260,9 +252,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalDownloads}</div>
-              <p className="text-xs text-muted-foreground">
-                Total downloads
-              </p>
+              <p className="text-xs text-muted-foreground">Total downloads</p>
             </CardContent>
           </Card>
 
@@ -273,9 +263,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalComments}</div>
-              <p className="text-xs text-muted-foreground">
-                User engagement
-              </p>
+              <p className="text-xs text-muted-foreground">User engagement</p>
             </CardContent>
           </Card>
         </div>
@@ -284,9 +272,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Your Content</CardTitle>
-            <CardDescription>
-              View and manage all your uploaded content
-            </CardDescription>
+            <CardDescription>View and manage all your uploaded content</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -299,19 +285,17 @@ export default function DashboardPage() {
               <TabsContent value={activeTab} className="mt-6">
                 {loading ? (
                   <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
                   </div>
                 ) : filteredPosts.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-muted-foreground mb-4">No posts yet</p>
-                    <Button onClick={() => router.push('/upload')}>
-                      Upload Your First Post
-                    </Button>
+                  <div className="py-12 text-center">
+                    <p className="mb-4 text-muted-foreground">No posts yet</p>
+                    <Button onClick={() => router.push('/upload')}>Upload Your First Post</Button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {filteredPosts.map((post) => (
-                      <Card key={post.id} className="overflow-hidden group">
+                      <Card key={post.id} className="group overflow-hidden">
                         <div className="relative aspect-video bg-muted">
                           {post.thumbnail_url || post.file_url ? (
                             <Image
@@ -321,13 +305,13 @@ export default function DashboardPage() {
                               className="object-cover"
                             />
                           ) : (
-                            <div className="flex items-center justify-center h-full">
+                            <div className="flex h-full items-center justify-center">
                               <LayoutGrid className="h-8 w-8 text-muted-foreground" />
                             </div>
                           )}
-                          
+
                           {/* Action Menu */}
-                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="secondary" size="icon" className="h-8 w-8">
@@ -344,7 +328,7 @@ export default function DashboardPage() {
                                   Edit Post (Coming Soon)
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => setDeletePostId(post.id)}
                                   className="text-destructive"
                                 >
@@ -356,16 +340,16 @@ export default function DashboardPage() {
                           </div>
 
                           {/* Category Badge */}
-                          <Badge className="absolute top-2 left-2" variant="secondary">
+                          <Badge className="absolute left-2 top-2" variant="secondary">
                             {post.category}
                           </Badge>
                         </div>
-                        
-                        <CardContent className="p-4 space-y-3">
+
+                        <CardContent className="space-y-3 p-4">
                           <div>
-                            <h3 className="font-semibold line-clamp-1">{post.title}</h3>
+                            <h3 className="line-clamp-1 font-semibold">{post.title}</h3>
                             {post.description && (
-                              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                                 {post.description}
                               </p>
                             )}
@@ -429,13 +413,16 @@ export default function DashboardPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your post
-              and all associated data including likes and comments.
+              This action cannot be undone. This will permanently delete your post and all
+              associated data including likes and comments.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeletePost} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction
+              onClick={handleDeletePost}
+              className="bg-destructive text-destructive-foreground"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

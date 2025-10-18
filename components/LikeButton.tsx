@@ -28,7 +28,7 @@ export default function LikeButton({ postId, initialLikeCount, className = '' }:
         localStorage.setItem('vibe_session_id', sid);
       }
       setSessionId(sid);
-      
+
       // Check if this session has liked the post
       checkLikeStatus(sid);
     };
@@ -44,7 +44,7 @@ export default function LikeButton({ postId, initialLikeCount, className = '' }:
         .eq('post_id', postId)
         .eq('session_id', sid)
         .maybeSingle();
-      
+
       if (!error && data) {
         setLiked(true);
       }
@@ -57,24 +57,24 @@ export default function LikeButton({ postId, initialLikeCount, className = '' }:
     if (!sessionId || loading) return;
 
     setLoading(true);
-    
+
     try {
       // Optimistically update UI
       const newLikedState = !liked;
       setLiked(newLikedState);
-      setLikeCount(prev => newLikedState ? prev + 1 : Math.max(0, prev - 1));
+      setLikeCount((prev) => (newLikedState ? prev + 1 : Math.max(0, prev - 1)));
 
       // Call the RPC function to toggle like
       const { data, error } = await (supabase.rpc as any)('toggle_anonymous_like', {
         p_post_id: postId,
         p_session_id: sessionId,
-        p_ip_hash: null
+        p_ip_hash: null,
       });
 
       if (error) {
         // Revert optimistic update on error
         setLiked(!newLikedState);
-        setLikeCount(prev => !newLikedState ? prev + 1 : Math.max(0, prev - 1));
+        setLikeCount((prev) => (!newLikedState ? prev + 1 : Math.max(0, prev - 1)));
         throw error;
       }
 
@@ -107,7 +107,6 @@ export default function LikeButton({ postId, initialLikeCount, className = '' }:
         const totalLikes = (authLikes || 0) + (anonLikes || 0);
         setLikeCount(totalLikes);
       }
-
     } catch (error) {
       console.error('Error toggling like:', error);
       toast({

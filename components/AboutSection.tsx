@@ -8,7 +8,8 @@ export default function AboutSection() {
     {
       icon: Zap,
       title: 'AI-Powered Creativity',
-      description: 'Leverage cutting-edge AI models like Google Nano Banana to create stunning content',
+      description:
+        'Leverage cutting-edge AI models like Google Nano Banana to create stunning content',
     },
     {
       icon: Users,
@@ -28,26 +29,26 @@ export default function AboutSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-background to-background/50">
+    <section className="bg-gradient-to-b from-background to-background/50 py-20">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="mb-12 text-center"
         >
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="mb-4 text-4xl font-bold">
             Our <span className="text-gradient">Mission</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            We're building a central space where creativity meets AI technology. 
-            Share your AI-generated masterpieces, discover inspiring content, 
-            and connect with a community of innovative creators.
+          <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
+            We're building a central space where creativity meets AI technology. Share your
+            AI-generated masterpieces, discover inspiring content, and connect with a community of
+            innovative creators.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -57,11 +58,11 @@ export default function AboutSection() {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="rounded-xl p-6 bg-card hover:bg-card/80 border border-border/50 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
-                <div className="rounded-lg bg-primary/10 p-3 w-fit mb-4 group-hover:bg-primary/20 transition-colors">
+              <div className="rounded-xl border border-border/50 bg-card p-6 transition-all hover:border-primary/50 hover:bg-card/80 hover:shadow-lg hover:shadow-primary/10">
+                <div className="mb-4 w-fit rounded-lg bg-primary/10 p-3 transition-colors group-hover:bg-primary/20">
                   <feature.icon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground">{feature.description}</p>
               </div>
             </motion.div>

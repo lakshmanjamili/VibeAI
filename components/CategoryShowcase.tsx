@@ -21,33 +21,33 @@ export default function CategoryShowcase() {
   const [loading, setLoading] = useState(true);
 
   const categories = [
-    { 
-      value: 'gif' as PostCategory, 
-      label: 'GIFs', 
-      icon: Film, 
+    {
+      value: 'gif' as PostCategory,
+      label: 'GIFs',
+      icon: Film,
       color: 'from-purple-500 to-pink-500',
-      description: 'Animated creativity in motion'
+      description: 'Animated creativity in motion',
     },
-    { 
-      value: 'video' as PostCategory, 
-      label: 'Videos', 
-      icon: Video, 
+    {
+      value: 'video' as PostCategory,
+      label: 'Videos',
+      icon: Video,
       color: 'from-blue-500 to-cyan-500',
-      description: 'Cinematic AI experiences'
+      description: 'Cinematic AI experiences',
     },
-    { 
-      value: 'storybook' as PostCategory, 
-      label: 'Storybooks', 
-      icon: BookOpen, 
+    {
+      value: 'storybook' as PostCategory,
+      label: 'Storybooks',
+      icon: BookOpen,
       color: 'from-green-500 to-emerald-500',
-      description: 'Narrative adventures'
+      description: 'Narrative adventures',
     },
-    { 
-      value: 'photo' as PostCategory, 
-      label: 'Photos', 
-      icon: ImageIcon, 
+    {
+      value: 'photo' as PostCategory,
+      label: 'Photos',
+      icon: ImageIcon,
       color: 'from-orange-500 to-red-500',
-      description: 'Still moments of wonder'
+      description: 'Still moments of wonder',
     },
   ];
 
@@ -60,11 +60,13 @@ export default function CategoryShowcase() {
       const categoryPromises = categories.map(async (cat) => {
         const { data, error } = await supabase
           .from('posts')
-          .select(`
+          .select(
+            `
             *,
             users!inner(username, avatar_url),
             likes(count)
-          `)
+          `
+          )
           .eq('category', cat.value)
           .order('view_count', { ascending: false })
           .limit(1)
@@ -81,7 +83,7 @@ export default function CategoryShowcase() {
       });
 
       const results = await Promise.all(categoryPromises);
-      
+
       const newCategoryData: Record<PostCategory, any> = {
         gif: results[0],
         video: results[1],
@@ -111,7 +113,7 @@ export default function CategoryShowcase() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {categories.map((category, index) => {
           const Icon = category.icon;
           const post = categoryData[category.value];
@@ -123,13 +125,15 @@ export default function CategoryShowcase() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="overflow-hidden hover:shadow-xl transition-all group">
+              <Card className="group overflow-hidden transition-all hover:shadow-xl">
                 <div className={`h-2 bg-gradient-to-r ${category.color}`} />
-                
+
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className={`rounded-lg p-2 bg-gradient-to-r ${category.color} bg-opacity-10`}>
+                      <div
+                        className={`rounded-lg bg-gradient-to-r p-2 ${category.color} bg-opacity-10`}
+                      >
                         <Icon className="h-5 w-5 text-white" />
                       </div>
                       <CardTitle className="text-lg">{category.label}</CardTitle>
@@ -140,36 +144,34 @@ export default function CategoryShowcase() {
                       </Button>
                     </Link>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {category.description}
-                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">{category.description}</p>
                 </CardHeader>
 
                 <CardContent>
                   {loading ? (
-                    <div className="h-48 bg-muted animate-pulse rounded-lg" />
+                    <div className="h-48 animate-pulse rounded-lg bg-muted" />
                   ) : post ? (
                     <Link href={`/post/${post.id}`}>
                       <div className="space-y-3">
-                        <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                        <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
                           {post.thumbnail_url || post.file_url ? (
                             <Image
                               src={post.thumbnail_url || post.file_url}
                               alt={post.title}
                               fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              className="object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                           ) : (
-                            <div className="flex items-center justify-center h-full">
+                            <div className="flex h-full items-center justify-center">
                               <Icon className="h-12 w-12 text-muted-foreground" />
                             </div>
                           )}
-                          
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                          
-                          <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+
+                          <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between opacity-0 transition-opacity group-hover:opacity-100">
                             <Badge variant="secondary" className="backdrop-blur-sm">
-                              <Eye className="h-3 w-3 mr-1" />
+                              <Eye className="mr-1 h-3 w-3" />
                               {post.view_count}
                             </Badge>
                             <Badge variant="secondary" className="backdrop-blur-sm">
@@ -177,18 +179,16 @@ export default function CategoryShowcase() {
                             </Badge>
                           </div>
                         </div>
-                        
+
                         <div>
-                          <p className="font-semibold truncate">{post.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            by {post.username}
-                          </p>
+                          <p className="truncate font-semibold">{post.title}</p>
+                          <p className="text-sm text-muted-foreground">by {post.username}</p>
                         </div>
                       </div>
                     </Link>
                   ) : (
-                    <div className="h-48 rounded-lg border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center">
-                      <Icon className="h-12 w-12 text-muted-foreground/30 mb-2" />
+                    <div className="flex h-48 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/20">
+                      <Icon className="mb-2 h-12 w-12 text-muted-foreground/30" />
                       <p className="text-sm text-muted-foreground">No content yet</p>
                       <Link href="/upload">
                         <Button variant="link" size="sm" className="mt-2">
