@@ -10,7 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -18,11 +24,11 @@ import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { PostWithMetrics } from '@/types/database';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Compass, 
-  TrendingUp, 
-  Clock, 
-  Sparkles, 
+import {
+  Compass,
+  TrendingUp,
+  Clock,
+  Sparkles,
   Search,
   Filter,
   Grid3x3,
@@ -41,7 +47,7 @@ import {
   Flame,
   Zap,
   Star,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 interface ExploreCategory {
@@ -58,43 +64,43 @@ const EXPLORE_CATEGORIES: ExploreCategory[] = [
     name: 'AI Generated',
     icon: Wand2,
     description: 'Content created with AI',
-    gradient: 'from-purple-500 to-pink-500'
+    gradient: 'from-purple-500 to-pink-500',
   },
   {
     id: 'trending',
     name: 'Trending Now',
     icon: TrendingUp,
     description: 'Popular this week',
-    gradient: 'from-orange-500 to-red-500'
+    gradient: 'from-orange-500 to-red-500',
   },
   {
     id: 'most_liked',
     name: 'Most Liked',
     icon: Heart,
     description: 'Community favorites',
-    gradient: 'from-pink-500 to-red-500'
+    gradient: 'from-pink-500 to-red-500',
   },
   {
     id: 'recent',
     name: 'Fresh Content',
     icon: Clock,
     description: 'Just uploaded',
-    gradient: 'from-blue-500 to-cyan-500'
+    gradient: 'from-blue-500 to-cyan-500',
   },
   {
     id: 'videos',
     name: 'Videos',
     icon: Video,
     description: 'Motion content',
-    gradient: 'from-red-500 to-pink-500'
+    gradient: 'from-red-500 to-pink-500',
   },
   {
     id: 'images',
     name: 'Images',
     icon: Camera,
     description: 'Photos & Art',
-    gradient: 'from-green-500 to-emerald-500'
-  }
+    gradient: 'from-green-500 to-emerald-500',
+  },
 ];
 
 interface AIModelStats {
@@ -137,7 +143,7 @@ export default function ExplorePage() {
         if (timeFilter === 'today') date.setDate(date.getDate() - 1);
         else if (timeFilter === 'week') date.setDate(date.getDate() - 7);
         else if (timeFilter === 'month') date.setMonth(date.getMonth() - 1);
-        
+
         query = query.gte('created_at', date.toISOString());
       }
 
@@ -168,7 +174,7 @@ export default function ExplorePage() {
       toast({
         title: 'Error',
         description: 'Failed to load content',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -194,12 +200,14 @@ export default function ExplorePage() {
       }, {});
 
       // Convert to array with icons
-      const modelStatsArray: AIModelStats[] = Object.entries(stats).map(([model, count]) => ({
-        model,
-        count: count as number,
-        icon: getModelIcon(model),
-        color: getModelColor(model)
-      })).sort((a, b) => b.count - a.count);
+      const modelStatsArray: AIModelStats[] = Object.entries(stats)
+        .map(([model, count]) => ({
+          model,
+          count: count as number,
+          icon: getModelIcon(model),
+          color: getModelColor(model),
+        }))
+        .sort((a, b) => b.count - a.count);
 
       setModelStats(modelStatsArray);
     } catch (error) {
@@ -230,26 +238,27 @@ export default function ExplorePage() {
 
     // Category filter
     if (selectedCategory === 'ai_generated') {
-      filtered = filtered.filter(p => p.ai_model);
+      filtered = filtered.filter((p) => p.ai_model);
     } else if (selectedCategory === 'videos') {
-      filtered = filtered.filter(p => p.category === 'video');
+      filtered = filtered.filter((p) => p.category === 'video');
     } else if (selectedCategory === 'images') {
-      filtered = filtered.filter(p => p.category === 'photo' || p.category === 'gif');
+      filtered = filtered.filter((p) => p.category === 'photo' || p.category === 'gif');
     }
 
     // Model filter
     if (selectedModel !== 'all') {
-      filtered = filtered.filter(p => p.ai_model === selectedModel);
+      filtered = filtered.filter((p) => p.ai_model === selectedModel);
     }
 
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.title?.toLowerCase().includes(query) ||
-        p.description?.toLowerCase().includes(query) ||
-        p.prompt?.toLowerCase().includes(query) ||
-        p.hashtags?.some(tag => tag.toLowerCase().includes(query))
+      filtered = filtered.filter(
+        (p) =>
+          p.title?.toLowerCase().includes(query) ||
+          p.description?.toLowerCase().includes(query) ||
+          p.prompt?.toLowerCase().includes(query) ||
+          p.hashtags?.some((tag) => tag.toLowerCase().includes(query))
       );
     }
 
@@ -259,49 +268,47 @@ export default function ExplorePage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
-      <main className="container mx-auto px-4 pt-20 pb-12">
+
+      <main className="container mx-auto px-4 pb-12 pt-20">
         {/* Header */}
-        <motion.div 
-          className="text-center mb-8"
+        <motion.div
+          className="mb-8 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 mb-4">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
             <Compass className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">Explore</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
             <span className="text-gradient-supreme">Discover Amazing Content</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Explore AI-generated art, videos, and creative content from our community
           </p>
         </motion.div>
 
         {/* Category Cards */}
-        <ScrollArea className="w-full whitespace-nowrap mb-8">
+        <ScrollArea className="mb-8 w-full whitespace-nowrap">
           <div className="flex space-x-4 pb-4">
             {EXPLORE_CATEGORIES.map((category) => (
               <motion.button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`flex-shrink-0 ${
-                  selectedCategory === category.id ? 'scale-105' : ''
-                }`}
+                className={`flex-shrink-0 ${selectedCategory === category.id ? 'scale-105' : ''}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Card className={`w-40 h-32 cursor-pointer overflow-hidden ${
-                  selectedCategory === category.id ? 'border-primary' : ''
-                }`}>
+                <Card
+                  className={`h-32 w-40 cursor-pointer overflow-hidden ${
+                    selectedCategory === category.id ? 'border-primary' : ''
+                  }`}
+                >
                   <div className={`h-1 bg-gradient-to-r ${category.gradient}`} />
-                  <CardContent className="p-4 flex flex-col items-center justify-center h-full">
-                    <category.icon className="h-6 w-6 mb-2" />
-                    <h3 className="font-semibold text-sm">{category.name}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {category.description}
-                    </p>
+                  <CardContent className="flex h-full flex-col items-center justify-center p-4">
+                    <category.icon className="mb-2 h-6 w-6" />
+                    <h3 className="text-sm font-semibold">{category.name}</h3>
+                    <p className="mt-1 text-xs text-muted-foreground">{category.description}</p>
                   </CardContent>
                 </Card>
               </motion.button>
@@ -312,7 +319,7 @@ export default function ExplorePage() {
 
         {/* AI Model Statistics */}
         {modelStats.length > 0 && (
-          <Card className="mb-8 glass-supreme">
+          <Card className="glass-supreme mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Wand2 className="h-5 w-5" />
@@ -352,10 +359,10 @@ export default function ExplorePage() {
         )}
 
         {/* Filters Bar */}
-        <div className="flex flex-wrap gap-4 mb-8 items-center">
+        <div className="mb-8 flex flex-wrap items-center gap-4">
           {/* Search */}
-          <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="relative max-w-xs flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
             <Input
               placeholder="Search content..."
               value={searchQuery}
@@ -429,12 +436,7 @@ export default function ExplorePage() {
           </div>
 
           {/* Refresh */}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={fetchPosts}
-            disabled={loading}
-          >
+          <Button variant="outline" size="icon" onClick={fetchPosts} disabled={loading}>
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
@@ -449,24 +451,24 @@ export default function ExplorePage() {
         {/* Content Grid */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary" />
           </div>
         ) : filteredPosts.length === 0 ? (
           <Card className="py-20 text-center">
             <CardContent>
-              <Compass className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No content found</h3>
-              <p className="text-muted-foreground">
-                Try adjusting your filters or search query
-              </p>
+              <Compass className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <h3 className="mb-2 text-lg font-semibold">No content found</h3>
+              <p className="text-muted-foreground">Try adjusting your filters or search query</p>
             </CardContent>
           </Card>
         ) : (
-          <div className={`grid gap-6 ${
-            viewMode === 'masonry' 
-              ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' 
-              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-          }`}>
+          <div
+            className={`grid gap-6 ${
+              viewMode === 'masonry'
+                ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+                : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+            }`}
+          >
             <AnimatePresence>
               {filteredPosts.map((post, index) => (
                 <PostCard key={post.id} post={post} index={index} />

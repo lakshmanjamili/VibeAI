@@ -8,10 +8,9 @@ as AI generation is becoming popular, people want to see how to do it and how ex
 
 3. various cateriogies like gif, videos, images, story books and otehr categories.. We need to select weekly top loved ones and it show on the leadersboard.
 
-4. future use-case 2: all subscribers get free credits to generate images using multi-modals from google to grok.. where they can immediately generate, post -> when posted we can automate to capture the prompot, how it got generated with model etc... 
+4. future use-case 2: all subscribers get free credits to generate images using multi-modals from google to grok.. where they can immediately generate, post -> when posted we can automate to capture the prompot, how it got generated with model etc...
 
-4. Future: Create an AI community of all subscribers to form a forum, learn and share about ai geneatyeion..
-
+5. Future: Create an AI community of all subscribers to form a forum, learn and share about ai geneatyeion..
 
 this is are few, but based on these... Do the best architecture, bestdatabase schema to scale... use open router, open ai from other projects as needed in future.
 

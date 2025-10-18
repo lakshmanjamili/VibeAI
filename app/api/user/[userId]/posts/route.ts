@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { userId: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
   try {
     const userId = params.userId;
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     // Get query parameters
@@ -24,10 +18,7 @@ export async function GET(
     const order = searchParams.get('order') || 'desc'; // asc, desc
 
     // Build query
-    let query = supabase
-      .from('posts_with_metrics')
-      .select('*')
-      .eq('user_id', userId);
+    let query = supabase.from('posts_with_metrics').select('*').eq('user_id', userId);
 
     // Apply category filter if provided
     if (category && category !== 'all') {
@@ -62,15 +53,11 @@ export async function GET(
         total: count || 0,
         limit,
         offset,
-        hasMore: (count || 0) > offset + limit
-      }
+        hasMore: (count || 0) > offset + limit,
+      },
     });
-
   } catch (error: any) {
     console.error('Error fetching user posts:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch posts' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Failed to fetch posts' }, { status: 500 });
   }
 }

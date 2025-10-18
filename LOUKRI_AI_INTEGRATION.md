@@ -9,14 +9,22 @@ This guide shows how to integrate VibeAI's powerful features into your main Louk
 ## 🎨 Design System & Branding
 
 ### Premium Color Palette
+
 ```css
 /* Purple/Pink Gradient Theme */
---primary: 262 83% 58%;  /* Vibrant Purple */
---accent: 263 70% 50%;   /* Deep Purple */
+--primary: 262 83% 58%; /* Vibrant Purple */
+--accent: 263 70% 50%; /* Deep Purple */
 
 /* Gradient Classes */
 .gradient-supreme {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+  background: linear-gradient(
+    135deg,
+    #667eea 0%,
+    #764ba2 25%,
+    #f093fb 50%,
+    #f5576c 75%,
+    #4facfe 100%
+  );
 }
 
 .text-gradient-supreme {
@@ -27,6 +35,7 @@ This guide shows how to integrate VibeAI's powerful features into your main Louk
 ```
 
 ### Glassmorphism Effects
+
 ```css
 .glass-supreme {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
@@ -40,7 +49,9 @@ This guide shows how to integrate VibeAI's powerful features into your main Louk
 ## 🔥 Key Features to Add
 
 ### 1. AI Content Gallery
+
 **Features:**
+
 - Photo, Video, GIF, and Storybook categories
 - Like/voting system with anonymous support
 - Comments with real-time updates
@@ -48,6 +59,7 @@ This guide shows how to integrate VibeAI's powerful features into your main Louk
 - View count analytics
 
 **Database Schema:**
+
 ```sql
 -- Posts table
 CREATE TABLE posts (
@@ -76,7 +88,9 @@ CREATE TABLE likes (
 ```
 
 ### 2. Anonymous Voting System
+
 **Implementation:**
+
 ```typescript
 // Session-based tracking
 const getSessionId = () => {
@@ -93,26 +107,29 @@ const toggleLike = async (postId: string) => {
   const sessionId = getSessionId();
   const { data, error } = await supabase.rpc('toggle_anonymous_like', {
     p_post_id: postId,
-    p_session_id: sessionId
+    p_session_id: sessionId,
   });
 };
 ```
 
 ### 3. Upload System
+
 **Categories:**
+
 - Photos (AI-generated images)
 - Videos (AI animations)
 - GIFs (Animated content)
 - Storybooks (AI narratives)
 
 **File Upload with Supabase:**
+
 ```typescript
 const uploadFile = async (file: File, category: string) => {
   const fileName = `${Date.now()}_${file.name}`;
   const { data, error } = await supabase.storage
     .from('ai-content')
     .upload(`${category}/${fileName}`, file);
-    
+
   return data?.path;
 };
 ```
@@ -120,11 +137,12 @@ const uploadFile = async (file: File, category: string) => {
 ### 4. Premium UI Components
 
 **Animated Hero Section:**
+
 ```tsx
 <section className="relative min-h-screen overflow-hidden">
   {/* Aurora Background */}
-  <div className="absolute inset-0 gradient-aurora" />
-  
+  <div className="gradient-aurora absolute inset-0" />
+
   {/* Floating Particles */}
   {particles.map((p) => (
     <motion.div
@@ -139,7 +157,7 @@ const uploadFile = async (file: File, category: string) => {
       }}
     />
   ))}
-  
+
   {/* Content */}
   <div className="relative z-10">
     <h1 className="text-gradient-supreme">Loukri AI</h1>
@@ -148,12 +166,13 @@ const uploadFile = async (file: File, category: string) => {
 ```
 
 **Premium Button:**
+
 ```tsx
 <Button className="btn-supreme group">
   <span className="relative z-10">
     <Rocket className="h-5 w-5" />
     Get Started
-    <ArrowRight className="group-hover:translate-x-1 transition" />
+    <ArrowRight className="transition group-hover:translate-x-1" />
   </span>
 </Button>
 ```
@@ -163,6 +182,7 @@ const uploadFile = async (file: File, category: string) => {
 ## 📊 Analytics Dashboard
 
 ### Features to Track:
+
 - Total content created
 - Likes and engagement
 - Download statistics
@@ -171,6 +191,7 @@ const uploadFile = async (file: File, category: string) => {
 - Popular prompts
 
 ### Implementation:
+
 ```typescript
 // Fetch analytics
 const fetchAnalytics = async () => {
@@ -178,7 +199,7 @@ const fetchAnalytics = async () => {
     .from('posts')
     .select('category, view_count, download_count, created_at')
     .gte('created_at', last30Days);
-    
+
   return processStats(stats);
 };
 ```
@@ -188,6 +209,7 @@ const fetchAnalytics = async () => {
 ## 🛡️ Anti-Bot Protection
 
 ### 10-Layer Security System:
+
 1. **Rate Limiting** - API request throttling
 2. **Session Validation** - localStorage tracking
 3. **IP Tracking** - Hashed IP verification
@@ -204,18 +226,21 @@ const fetchAnalytics = async () => {
 ## 🎯 Quick Integration Steps
 
 ### 1. Install Dependencies
+
 ```bash
 npm install @supabase/supabase-js framer-motion lucide-react date-fns
 npm install @radix-ui/react-* # UI primitives
 ```
 
 ### 2. Setup Environment
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 ```
 
 ### 3. Copy Key Components
+
 - `/components/PostCard.tsx` - Content display cards
 - `/components/LikeButton.tsx` - Voting system
 - `/components/CommentSection.tsx` - Comments with real-time
@@ -223,6 +248,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 - `/components/Footer.tsx` - Branded footer
 
 ### 4. Add Routes
+
 ```typescript
 // app/gallery/page.tsx - Content gallery
 // app/upload/page.tsx - Upload interface
@@ -231,7 +257,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 ```
 
 ### 5. Database Setup
+
 Run the SQL scripts in `/documents/sql/`:
+
 - `01_database_schema.sql` - Core tables
 - `02_storage_setup.sql` - File storage
 
@@ -240,12 +268,13 @@ Run the SQL scripts in `/documents/sql/`:
 ## 🌟 Special Features
 
 ### Weekly Best & Top Likes
+
 ```typescript
 // Fetch trending content
 const fetchWeeklyBest = async () => {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  
+
   const { data } = await supabase
     .from('posts')
     .select('*, likes(count)')
@@ -255,15 +284,20 @@ const fetchWeeklyBest = async () => {
 ```
 
 ### Real-time Updates
+
 ```typescript
 // Subscribe to new posts
 const channel = supabase
   .channel('posts')
-  .on('postgres_changes', {
-    event: 'INSERT',
-    schema: 'public',
-    table: 'posts'
-  }, handleNewPost)
+  .on(
+    'postgres_changes',
+    {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'posts',
+    },
+    handleNewPost
+  )
   .subscribe();
 ```
 
@@ -272,6 +306,7 @@ const channel = supabase
 ## 🚀 Deployment
 
 ### Vercel Deployment
+
 ```bash
 # Build for production
 npm run build
@@ -281,7 +316,9 @@ vercel --prod
 ```
 
 ### Environment Variables
+
 Set in Vercel dashboard:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_CLERK_*` (for auth)
@@ -291,6 +328,7 @@ Set in Vercel dashboard:
 ## 📱 Responsive Design
 
 All components are fully responsive:
+
 - Mobile-first approach
 - Touch-friendly interactions
 - Optimized image loading
@@ -326,6 +364,7 @@ All components are fully responsive:
 ## 📞 Support
 
 For questions or assistance with integration:
+
 - Website: [loukriai.com](https://loukriai.com)
 - GitHub: [@loukriai](https://github.com/loukriai)
 - Twitter: [@loukriai](https://twitter.com/loukriai)
@@ -334,4 +373,4 @@ For questions or assistance with integration:
 
 **Built with ❤️ by Loukri AI INC**
 
-*Empowering creativity with artificial intelligence*
+_Empowering creativity with artificial intelligence_

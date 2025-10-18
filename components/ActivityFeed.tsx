@@ -31,20 +31,28 @@ export default function ActivityFeed() {
 
   useEffect(() => {
     fetchRecentActivity();
-    
+
     // Set up real-time subscription for new activities
     const channel = supabase
       .channel('activity-feed')
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'posts' 
-      }, handleNewPost)
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'likes' 
-      }, handleNewLike)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'posts',
+        },
+        handleNewPost
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'likes',
+        },
+        handleNewLike
+      )
       .subscribe();
 
     return () => {
@@ -57,25 +65,29 @@ export default function ActivityFeed() {
       // Fetch recent posts
       const { data: recentPosts } = await supabase
         .from('posts')
-        .select(`
+        .select(
+          `
           id,
           title,
           category,
           created_at,
           users!inner(username, avatar_url)
-        `)
+        `
+        )
         .order('created_at', { ascending: false })
         .limit(5);
 
       // Fetch recent likes
       const { data: recentLikes } = await supabase
         .from('likes')
-        .select(`
+        .select(
+          `
           id,
           created_at,
           users!inner(username, avatar_url),
           posts!inner(id, title, category)
-        `)
+        `
+        )
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -140,7 +152,7 @@ export default function ActivityFeed() {
       created_at: payload.new.created_at,
     };
 
-    setActivities(prev => [newActivity, ...prev].slice(0, 10));
+    setActivities((prev) => [newActivity, ...prev].slice(0, 10));
   };
 
   const handleNewLike = (payload: any) => {
@@ -223,18 +235,16 @@ export default function ActivityFeed() {
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+                  <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
-                    <div className="h-3 w-1/2 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
+                    <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
                   </div>
                 </div>
               ))}
             </div>
           ) : activities.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
-              No recent activity
-            </p>
+            <p className="py-8 text-center text-muted-foreground">No recent activity</p>
           ) : (
             <AnimatePresence>
               <div className="space-y-4">
@@ -245,7 +255,7 @@ export default function ActivityFeed() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex items-start gap-3 rounded-lg p-2 transition-colors hover:bg-muted/50"
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={activity.user.avatar_url || ''} />
@@ -253,22 +263,22 @@ export default function ActivityFeed() {
                         {activity.user.username.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    
-                    <div className="flex-1 min-w-0">
+
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-start gap-2">
                         <div className={`mt-1 ${getActivityColor(activity.type)}`}>
                           {getActivityIcon(activity.type)}
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm leading-relaxed">
-                            {getActivityText(activity)}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
+                          <p className="text-sm leading-relaxed">{getActivityText(activity)}</p>
+                          <div className="mt-1 flex items-center gap-2">
                             <Badge variant="outline" className="text-xs">
                               {activity.post.category}
                             </Badge>
                             <span className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
+                              {formatDistanceToNow(new Date(activity.created_at), {
+                                addSuffix: true,
+                              })}
                             </span>
                           </div>
                         </div>

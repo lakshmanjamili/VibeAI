@@ -4,23 +4,23 @@ import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { 
-  Sparkles, 
-  Star, 
-  Zap, 
+import {
+  Sparkles,
+  Star,
+  Zap,
   ArrowRight,
   Wand2,
   Rocket,
   Heart,
   Download,
-  Users
+  Users,
 } from 'lucide-react';
 
 export default function PremiumHero() {
   const router = useRouter();
   const { scrollY } = useScroll();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  
+
   // Parallax transforms
   const y1 = useTransform(scrollY, [0, 300], [0, 100]);
   const y2 = useTransform(scrollY, [0, 300], [0, -100]);
@@ -50,15 +50,15 @@ export default function PremiumHero() {
   }));
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       {/* Animated Background Layers */}
       <div className="absolute inset-0">
         {/* Aurora Background */}
-        <div className="absolute inset-0 gradient-aurora" />
-        
+        <div className="gradient-aurora absolute inset-0" />
+
         {/* Mesh Gradient */}
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 gradient-supreme" />
+          <div className="gradient-supreme absolute inset-0" />
         </div>
 
         {/* Floating Particles */}
@@ -81,14 +81,14 @@ export default function PremiumHero() {
               duration: particle.duration,
               delay: particle.delay,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             }}
           />
         ))}
 
         {/* Animated Orbs */}
         <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blob opacity-20"
+          className="blob absolute left-1/4 top-1/4 h-96 w-96 rounded-full opacity-20"
           animate={{
             x: [0, 100, 0],
             y: [0, -100, 0],
@@ -96,11 +96,11 @@ export default function PremiumHero() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "linear",
+            ease: 'linear',
           }}
         />
         <motion.div
-          className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blob opacity-20"
+          className="blob absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full opacity-20"
           animate={{
             x: [0, -100, 0],
             y: [0, 100, 0],
@@ -108,14 +108,14 @@ export default function PremiumHero() {
           transition={{
             duration: 15,
             repeat: Infinity,
-            ease: "linear",
+            ease: 'linear',
           }}
         />
       </div>
 
       {/* Main Content */}
-      <motion.div 
-        className="relative z-10 text-center px-4 max-w-6xl mx-auto"
+      <motion.div
+        className="relative z-10 mx-auto max-w-6xl px-4 text-center"
         style={{ opacity, scale }}
       >
         {/* Floating Badge */}
@@ -123,11 +123,11 @@ export default function PremiumHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-supreme mb-8"
+          className="glass-supreme mb-8 inline-flex items-center gap-2 rounded-full px-4 py-2"
         >
           <Sparkles className="h-4 w-4 text-yellow-400" />
           <span className="text-sm font-medium">Powered by Loukri AI</span>
-          <Star className="h-4 w-4 text-yellow-400 animate-pulse" />
+          <Star className="h-4 w-4 animate-pulse text-yellow-400" />
         </motion.div>
 
         {/* Main Title with 3D Effect */}
@@ -141,10 +141,10 @@ export default function PremiumHero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-7xl md:text-8xl lg:text-9xl font-black mb-6"
+            className="mb-6 text-7xl font-black md:text-8xl lg:text-9xl"
           >
             <span className="text-gradient-supreme block">VibeAI</span>
-            <span className="text-3xl md:text-4xl font-medium text-muted-foreground mt-4 block">
+            <span className="mt-4 block text-3xl font-medium text-muted-foreground md:text-4xl">
               Where Creativity Meets AI
             </span>
           </motion.h1>
@@ -155,10 +155,10 @@ export default function PremiumHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto"
+          className="mx-auto mb-12 max-w-3xl text-xl text-muted-foreground md:text-2xl"
         >
-          Discover, share, and create stunning AI-generated content.
-          Join the revolution of digital creativity.
+          Discover, share, and create stunning AI-generated content. Join the revolution of digital
+          creativity.
         </motion.p>
 
         {/* CTA Buttons with Premium Effects */}
@@ -166,29 +166,29 @@ export default function PremiumHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          className="flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
           <Button
             size="lg"
-            className="btn-supreme text-lg px-8 py-6 rounded-full group relative overflow-hidden"
+            className="btn-supreme group relative overflow-hidden rounded-full px-8 py-6 text-lg"
             onClick={() => router.push('/gallery')}
           >
             <span className="relative z-10 flex items-center gap-2">
               <Rocket className="h-5 w-5" />
               Explore Gallery
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </span>
           </Button>
 
           <Button
             size="lg"
             variant="outline"
-            className="text-lg px-8 py-6 rounded-full glass-supreme border-white/20 hover:border-white/40 group"
+            className="glass-supreme group rounded-full border-white/20 px-8 py-6 text-lg hover:border-white/40"
             onClick={() => router.push('/upload')}
           >
-            <Wand2 className="h-5 w-5 mr-2" />
+            <Wand2 className="mr-2 h-5 w-5" />
             Start Creating
-            <Sparkles className="h-4 w-4 ml-2 text-yellow-400 group-hover:rotate-180 transition-transform duration-500" />
+            <Sparkles className="ml-2 h-4 w-4 text-yellow-400 transition-transform duration-500 group-hover:rotate-180" />
           </Button>
         </motion.div>
 
@@ -197,7 +197,7 @@ export default function PremiumHero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.8 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6"
+          className="mt-20 grid grid-cols-2 gap-6 md:grid-cols-4"
         >
           {[
             { icon: Heart, label: 'Total Likes', value: '10K+', color: 'text-pink-400' },
@@ -209,11 +209,11 @@ export default function PremiumHero() {
               key={stat.label}
               className="glass-supreme rounded-2xl p-6"
               whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
               style={{ y: y1 }}
             >
-              <stat.icon className={`h-8 w-8 ${stat.color} mb-3 mx-auto`} />
-              <div className="text-3xl font-bold mb-1">{stat.value}</div>
+              <stat.icon className={`h-8 w-8 ${stat.color} mx-auto mb-3`} />
+              <div className="mb-1 text-3xl font-bold">{stat.value}</div>
               <div className="text-sm text-muted-foreground">{stat.label}</div>
             </motion.div>
           ))}
@@ -231,11 +231,11 @@ export default function PremiumHero() {
             transition={{ duration: 1.5, repeat: Infinity }}
             className="text-muted-foreground"
           >
-            <div className="w-6 h-10 border-2 border-current rounded-full flex justify-center">
+            <div className="flex h-10 w-6 justify-center rounded-full border-2 border-current">
               <motion.div
                 animate={{ y: [0, 15, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
-                className="w-1 h-3 bg-current rounded-full mt-2"
+                className="mt-2 h-3 w-1 rounded-full bg-current"
               />
             </div>
           </motion.div>
@@ -244,10 +244,10 @@ export default function PremiumHero() {
 
       {/* Decorative Elements */}
       <motion.div
-        className="absolute top-10 left-10 text-6xl opacity-10"
+        className="absolute left-10 top-10 text-6xl opacity-10"
         style={{ y: y2 }}
         animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
       >
         ⚡
       </motion.div>
@@ -255,15 +255,15 @@ export default function PremiumHero() {
         className="absolute bottom-10 right-10 text-6xl opacity-10"
         style={{ y: y1 }}
         animate={{ rotate: -360 }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
       >
         ✨
       </motion.div>
       <motion.div
-        className="absolute top-1/2 right-20 text-4xl opacity-10"
-        animate={{ 
+        className="absolute right-20 top-1/2 text-4xl opacity-10"
+        animate={{
           y: [0, -30, 0],
-          rotate: [0, 180, 360]
+          rotate: [0, 180, 360],
         }}
         transition={{ duration: 10, repeat: Infinity }}
       >

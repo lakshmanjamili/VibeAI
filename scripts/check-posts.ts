@@ -11,7 +11,7 @@ const supabase = createClient(
 async function checkPosts() {
   console.log('Checking database connection...');
   console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-  
+
   try {
     // Check posts table
     console.log('\n=== Checking posts table ===');
@@ -19,7 +19,7 @@ async function checkPosts() {
       .from('posts')
       .select('*')
       .order('created_at', { ascending: false });
-    
+
     if (postsError) {
       console.error('Error fetching posts:', postsError);
     } else {
@@ -40,7 +40,7 @@ async function checkPosts() {
       .from('posts_with_metrics')
       .select('*')
       .order('created_at', { ascending: false });
-    
+
     if (metricsError) {
       console.error('Error fetching posts_with_metrics:', metricsError);
     } else {
@@ -49,7 +49,9 @@ async function checkPosts() {
         console.log('\nPosts with metrics:');
         postsWithMetrics.forEach((post, index) => {
           console.log(`${index + 1}. ${post.title}`);
-          console.log(`   Views: ${post.view_count}, Likes: ${post.total_likes_count}, Comments: ${post.comment_count}`);
+          console.log(
+            `   Views: ${post.view_count}, Likes: ${post.total_likes_count}, Comments: ${post.comment_count}`
+          );
         });
       }
     }
@@ -61,9 +63,8 @@ async function checkPosts() {
       .select('table_name, table_type')
       .in('table_name', ['posts', 'posts_with_metrics'])
       .eq('table_schema', 'public');
-    
-    console.log('Database objects:', tables);
 
+    console.log('Database objects:', tables);
   } catch (error) {
     console.error('Unexpected error:', error);
   }

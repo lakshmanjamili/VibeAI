@@ -6,9 +6,21 @@ import { generateWithWanAI, WAN_AI_CAPABILITIES } from './wan-ai';
 import { supabase } from '@/lib/supabase';
 
 // AI Model Types
-export type AIModel = 'imagen' | 'gemini' | 'grok' | 'veo' | 'nano_banana' | 'gemini_chat' | 
-  'wan_text_to_image' | 'wan_text_to_video' | 'wan_image_to_video' | 'wan_photo_to_drawing' | 
-  'wan_cartoon_avatar' | 'wan_virtual_model' | 'wan_image_to_image' | 'wan_video_super_res';
+export type AIModel =
+  | 'imagen'
+  | 'gemini'
+  | 'grok'
+  | 'veo'
+  | 'nano_banana'
+  | 'gemini_chat'
+  | 'wan_text_to_image'
+  | 'wan_text_to_video'
+  | 'wan_image_to_video'
+  | 'wan_photo_to_drawing'
+  | 'wan_cartoon_avatar'
+  | 'wan_virtual_model'
+  | 'wan_image_to_image'
+  | 'wan_video_super_res';
 
 // Export Wan AI capabilities
 export { WAN_AI_CAPABILITIES } from './wan-ai';
@@ -23,8 +35,8 @@ export interface AIGenerationRequest {
     imageSize?: string;
     duration?: number;
     responseFormat?: 'url' | 'b64_json';
-    imageUrl?: string;  // For Wan AI image-based operations
-    editType?: string;  // For Wan AI edit operations
+    imageUrl?: string; // For Wan AI image-based operations
+    editType?: string; // For Wan AI edit operations
   };
 }
 
@@ -43,7 +55,7 @@ export interface AIGenerationResponse {
 }
 
 // Initialize AI clients
-const geminiClient = process.env.GEMINI_API_KEY 
+const geminiClient = process.env.GEMINI_API_KEY
   ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
   : null;
 
@@ -55,11 +67,13 @@ const openaiClient = process.env.OPENAI_API_KEY
 export async function generateWithGeminiChat(prompt: string): Promise<AIGenerationResponse> {
   try {
     if (!geminiClient) {
-      throw new Error('Gemini API key not configured. Please add GEMINI_API_KEY to your environment variables.');
+      throw new Error(
+        'Gemini API key not configured. Please add GEMINI_API_KEY to your environment variables.'
+      );
     }
 
     // Use the latest Gemini 1.5 Flash model for better performance
-    const model = geminiClient.getGenerativeModel({ 
+    const model = geminiClient.getGenerativeModel({
       model: 'gemini-1.5-flash-latest',
       generationConfig: {
         temperature: 0.7,
@@ -68,7 +82,7 @@ export async function generateWithGeminiChat(prompt: string): Promise<AIGenerati
         maxOutputTokens: 8192,
       },
     });
-    
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
@@ -77,7 +91,7 @@ export async function generateWithGeminiChat(prompt: string): Promise<AIGenerati
       success: true,
       data: { text },
       model: 'gemini_chat',
-      creditsUsed: 1
+      creditsUsed: 1,
     };
   } catch (error: any) {
     console.error('Gemini Chat error:', error);
@@ -85,16 +99,21 @@ export async function generateWithGeminiChat(prompt: string): Promise<AIGenerati
       success: false,
       error: error.message || 'Failed to generate response from Gemini',
       model: 'gemini_chat',
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
 
 // Nano Banana (Gemini Native Image - Creative/Artistic)
-export async function generateWithNanoBanana(prompt: string, options?: any): Promise<AIGenerationResponse> {
+export async function generateWithNanoBanana(
+  prompt: string,
+  options?: any
+): Promise<AIGenerationResponse> {
   try {
     if (!process.env.GEMINI_API_KEY) {
-      throw new Error('Gemini API key not configured. Please add GEMINI_API_KEY to your environment variables.');
+      throw new Error(
+        'Gemini API key not configured. Please add GEMINI_API_KEY to your environment variables.'
+      );
     }
 
     // Build the parts array starting with the prompt
@@ -110,8 +129,8 @@ export async function generateWithNanoBanana(prompt: string, options?: any): Pro
       parts.push({
         inlineData: {
           mimeType: 'image/jpeg',
-          data: base64Data
-        }
+          data: base64Data,
+        },
       });
     }
 
@@ -121,14 +140,14 @@ export async function generateWithNanoBanana(prompt: string, options?: any): Pro
       : prompt;
 
     parts.push({
-      text: userPrompt
+      text: userPrompt,
     });
 
     // Build generation config according to official docs
     const generationConfig: any = {
       temperature: options?.temperature ?? 0.7,
       topP: options?.topP ?? 0.95,
-      candidateCount: 1
+      candidateCount: 1,
     };
 
     // Response modalities - controls whether to output IMAGE, TEXT, or both
@@ -150,17 +169,19 @@ export async function generateWithNanoBanana(prompt: string, options?: any): Pro
     // Add image config for aspect ratio if provided
     if (options?.aspectRatio) {
       generationConfig.imageConfig = {
-        aspectRatio: options.aspectRatio
+        aspectRatio: options.aspectRatio,
       };
     }
 
     // Build the request body according to official API structure
     const requestBody = {
-      contents: [{
-        role: 'user',
-        parts: parts
-      }],
-      generationConfig: generationConfig
+      contents: [
+        {
+          role: 'user',
+          parts: parts,
+        },
+      ],
+      generationConfig: generationConfig,
     };
 
     console.log('Nano Banana Request:', JSON.stringify(requestBody, null, 2));
@@ -170,9 +191,9 @@ export async function generateWithNanoBanana(prompt: string, options?: any): Pro
       requestBody,
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        timeout: 60000 // 60 second timeout
+        timeout: 60000, // 60 second timeout
       }
     );
 
@@ -193,10 +214,10 @@ export async function generateWithNanoBanana(prompt: string, options?: any): Pro
           data: {
             base64: imagePart.inlineData.data,
             text: textPart?.text || '',
-            revisedPrompt: textPart?.text || prompt
+            revisedPrompt: textPart?.text || prompt,
           },
           model: 'nano_banana',
-          creditsUsed: 1
+          creditsUsed: 1,
         };
       }
     }
@@ -206,12 +227,14 @@ export async function generateWithNanoBanana(prompt: string, options?: any): Pro
       throw new Error(response.data.error.message || 'Generation failed');
     }
 
-    throw new Error('No image data in response. The model may have blocked the request or returned no content.');
+    throw new Error(
+      'No image data in response. The model may have blocked the request or returned no content.'
+    );
   } catch (error: any) {
     console.error('Nano Banana error:', {
       message: error.message,
       response: error.response?.data,
-      status: error.response?.status
+      status: error.response?.status,
     });
 
     let errorMessage = 'Failed to generate image';
@@ -235,13 +258,16 @@ export async function generateWithNanoBanana(prompt: string, options?: any): Pro
       success: false,
       error: errorMessage,
       model: 'nano_banana',
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
 
 // Imagen (Google's Photorealistic Image Generation)
-export async function generateWithImagen(prompt: string, options?: any): Promise<AIGenerationResponse> {
+export async function generateWithImagen(
+  prompt: string,
+  options?: any
+): Promise<AIGenerationResponse> {
   try {
     if (!process.env.GEMINI_API_KEY) {
       throw new Error('Gemini API key not configured');
@@ -259,12 +285,12 @@ export async function generateWithImagen(prompt: string, options?: any): Promise
         negativePrompt: options?.negativePrompt || 'blurry, low quality, distorted',
         personGeneration: 'allow_all',
         safetyFilterLevel: 'block_some',
-        language: 'en'
+        language: 'en',
       },
       {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       }
     );
 
@@ -275,10 +301,10 @@ export async function generateWithImagen(prompt: string, options?: any): Promise
         success: true,
         data: {
           urls,
-          url: urls[0]
+          url: urls[0],
         },
         model: 'imagen',
-        creditsUsed: images.length
+        creditsUsed: images.length,
       };
     }
 
@@ -288,13 +314,16 @@ export async function generateWithImagen(prompt: string, options?: any): Promise
       success: false,
       error: error.message,
       model: 'imagen',
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
 
 // Veo (Google's Video Generation)
-export async function generateWithVeo(prompt: string, options?: any): Promise<AIGenerationResponse> {
+export async function generateWithVeo(
+  prompt: string,
+  options?: any
+): Promise<AIGenerationResponse> {
   try {
     if (!process.env.GEMINI_API_KEY) {
       throw new Error('Gemini API key not configured');
@@ -309,8 +338,8 @@ export async function generateWithVeo(prompt: string, options?: any): Promise<AI
           aspectRatio: options?.aspectRatio || '16:9',
           numberOfVideos: 1,
           durationSeconds: options?.duration || 8,
-          personGeneration: 'ALLOW_ALL'
-        }
+          personGeneration: 'ALLOW_ALL',
+        },
       }
     );
 
@@ -320,8 +349,8 @@ export async function generateWithVeo(prompt: string, options?: any): Promise<AI
     const maxAttempts = 60; // 10 minutes max
 
     while (attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
-      
+      await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait 10 seconds
+
       const statusResponse = await axios.get(
         `https://generativelanguage.googleapis.com/v1beta/${operationName}?key=${process.env.GEMINI_API_KEY}`
       );
@@ -332,10 +361,10 @@ export async function generateWithVeo(prompt: string, options?: any): Promise<AI
           return {
             success: true,
             data: {
-              url: videos[0].video?.uri
+              url: videos[0].video?.uri,
             },
             model: 'veo',
-            creditsUsed: 5 // Videos cost more credits
+            creditsUsed: 5, // Videos cost more credits
           };
         }
         break;
@@ -349,13 +378,16 @@ export async function generateWithVeo(prompt: string, options?: any): Promise<AI
       success: false,
       error: error.message,
       model: 'veo',
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
 
 // Grok (xAI Image Generation)
-export async function generateWithGrok(prompt: string, options?: any): Promise<AIGenerationResponse> {
+export async function generateWithGrok(
+  prompt: string,
+  options?: any
+): Promise<AIGenerationResponse> {
   try {
     if (!process.env.XAI_API_KEY) {
       throw new Error('xAI API key not configured');
@@ -367,13 +399,13 @@ export async function generateWithGrok(prompt: string, options?: any): Promise<A
         model: 'grok-2-image',
         prompt,
         n: options?.numberOfImages || 1,
-        response_format: options?.responseFormat || 'url'
+        response_format: options?.responseFormat || 'url',
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.XAI_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${process.env.XAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
       }
     );
 
@@ -384,10 +416,10 @@ export async function generateWithGrok(prompt: string, options?: any): Promise<A
           success: true,
           data: {
             base64: images[0].b64_json,
-            revisedPrompt: images[0].revised_prompt
+            revisedPrompt: images[0].revised_prompt,
           },
           model: 'grok',
-          creditsUsed: images.length
+          creditsUsed: images.length,
         };
       } else {
         const urls = images.map((img: any) => img.url);
@@ -396,10 +428,10 @@ export async function generateWithGrok(prompt: string, options?: any): Promise<A
           data: {
             urls,
             url: urls[0],
-            revisedPrompt: images[0].revised_prompt
+            revisedPrompt: images[0].revised_prompt,
           },
           model: 'grok',
-          creditsUsed: images.length
+          creditsUsed: images.length,
         };
       }
     }
@@ -410,20 +442,26 @@ export async function generateWithGrok(prompt: string, options?: any): Promise<A
       success: false,
       error: error.message,
       model: 'grok',
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
 
 // Main generation function
-export async function generateAIContent(request: AIGenerationRequest): Promise<AIGenerationResponse> {
+export async function generateAIContent(
+  request: AIGenerationRequest
+): Promise<AIGenerationResponse> {
   // Handle Wan AI models
   if (request.model.startsWith('wan_')) {
-    return generateWithWanAI(request.model, {
-      prompt: request.prompt,
-      imageUrl: request.options?.imageUrl,
-      editType: request.options?.editType
-    }, request.options);
+    return generateWithWanAI(
+      request.model,
+      {
+        prompt: request.prompt,
+        imageUrl: request.options?.imageUrl,
+        editType: request.options?.editType,
+      },
+      request.options
+    );
   }
 
   switch (request.model) {
@@ -442,7 +480,7 @@ export async function generateAIContent(request: AIGenerationRequest): Promise<A
         success: false,
         error: `Unsupported model: ${request.model}`,
         model: request.model,
-        creditsUsed: 0
+        creditsUsed: 0,
       };
   }
 }
@@ -458,7 +496,7 @@ export async function saveBase64Image(base64Data: string, filename: string): Pro
       .upload(`generated/${filename}`, buffer, {
         contentType: 'image/jpeg',
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
       });
 
     if (error) {

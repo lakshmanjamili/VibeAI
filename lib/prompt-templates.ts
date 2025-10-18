@@ -31,7 +31,7 @@ Key Points to Include:
 Please write a clear, concise email that is professional yet approachable.`,
     tags: ['business', 'email', 'professional', 'communication'],
     difficulty: 'beginner',
-    expectedOutput: 'A well-structured professional email'
+    expectedOutput: 'A well-structured professional email',
   },
   {
     id: 'gemini_chat_2',
@@ -56,7 +56,7 @@ Focus on:
 Provide specific examples of improvements where applicable.`,
     tags: ['coding', 'development', 'review', 'programming'],
     difficulty: 'intermediate',
-    expectedOutput: 'Detailed code review with actionable suggestions'
+    expectedOutput: 'Detailed code review with actionable suggestions',
   },
   {
     id: 'gemini_chat_3',
@@ -81,7 +81,7 @@ Provide:
 Make it accessible to someone with [basic/intermediate/advanced] knowledge in this field.`,
     tags: ['research', 'academic', 'summary', 'education'],
     difficulty: 'advanced',
-    expectedOutput: 'Comprehensive research summary with key insights'
+    expectedOutput: 'Comprehensive research summary with key insights',
   },
   {
     id: 'gemini_chat_4',
@@ -107,7 +107,7 @@ Additional Requirements:
 Begin the story with an attention-grabbing opening.`,
     tags: ['creative', 'storytelling', 'fiction', 'writing'],
     difficulty: 'intermediate',
-    expectedOutput: 'An engaging original story'
+    expectedOutput: 'An engaging original story',
   },
   {
     id: 'gemini_chat_5',
@@ -135,7 +135,7 @@ Please provide:
 Focus on [innovative/cost-effective/viral] approaches.`,
     tags: ['marketing', 'business', 'strategy', 'campaign'],
     difficulty: 'advanced',
-    expectedOutput: 'Complete marketing campaign strategy'
+    expectedOutput: 'Complete marketing campaign strategy',
   },
 
   // ========== NANO BANANA IMAGE TEMPLATES ==========
@@ -156,7 +156,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - 4K quality, detailed textures`,
     tags: ['character', 'cartoon', 'cute', 'animation'],
     difficulty: 'beginner',
-    expectedOutput: 'A charming cartoon character illustration'
+    expectedOutput: 'A charming cartoon character illustration',
   },
   {
     id: 'nano_banana_2',
@@ -177,7 +177,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Ultra detailed, 8K resolution`,
     tags: ['landscape', 'fantasy', 'environment', 'magical'],
     difficulty: 'intermediate',
-    expectedOutput: 'A stunning fantasy landscape'
+    expectedOutput: 'A stunning fantasy landscape',
   },
   {
     id: 'nano_banana_3',
@@ -197,7 +197,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Print-ready quality`,
     tags: ['poster', 'retro', 'vintage', 'design'],
     difficulty: 'intermediate',
-    expectedOutput: 'A stylish retro poster design'
+    expectedOutput: 'A stylish retro poster design',
   },
 
   // ========== IMAGEN 4.0 TEMPLATES ==========
@@ -220,7 +220,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - 8K resolution, RAW format style`,
     tags: ['portrait', 'photorealistic', 'photography', 'professional'],
     difficulty: 'advanced',
-    expectedOutput: 'A stunning photorealistic portrait'
+    expectedOutput: 'A stunning photorealistic portrait',
   },
   {
     id: 'imagen_2',
@@ -241,7 +241,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - E-commerce ready, white background option`,
     tags: ['product', 'commercial', 'photography', 'ecommerce'],
     difficulty: 'intermediate',
-    expectedOutput: 'Professional product photography'
+    expectedOutput: 'Professional product photography',
   },
   {
     id: 'imagen_3',
@@ -262,7 +262,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Architectural photography style`,
     tags: ['architecture', 'visualization', 'building', 'realistic'],
     difficulty: 'advanced',
-    expectedOutput: 'Photorealistic architectural render'
+    expectedOutput: 'Photorealistic architectural render',
   },
   {
     id: 'imagen_4',
@@ -283,7 +283,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Color grading: Warm and inviting`,
     tags: ['food', 'photography', 'culinary', 'commercial'],
     difficulty: 'intermediate',
-    expectedOutput: 'Appetizing food photography'
+    expectedOutput: 'Appetizing food photography',
   },
 
   // ========== GROK IMAGE TEMPLATES ==========
@@ -306,7 +306,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Cinematic composition, high detail`,
     tags: ['cyberpunk', 'futuristic', 'cityscape', 'scifi'],
     difficulty: 'intermediate',
-    expectedOutput: 'A detailed cyberpunk cityscape'
+    expectedOutput: 'A detailed cyberpunk cityscape',
   },
   {
     id: 'grok_2',
@@ -327,7 +327,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Gallery quality, high resolution`,
     tags: ['abstract', 'art', 'creative', 'artistic'],
     difficulty: 'beginner',
-    expectedOutput: 'A striking abstract composition'
+    expectedOutput: 'A striking abstract composition',
   },
   {
     id: 'grok_3',
@@ -348,7 +348,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Industry-standard quality`,
     tags: ['concept', 'design', 'gaming', 'film'],
     difficulty: 'advanced',
-    expectedOutput: 'Professional concept art sheet'
+    expectedOutput: 'Professional concept art sheet',
   },
   {
     id: 'grok_4',
@@ -369,7 +369,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Editorial illustration style`,
     tags: ['fashion', 'design', 'illustration', 'style'],
     difficulty: 'intermediate',
-    expectedOutput: 'Elegant fashion illustration'
+    expectedOutput: 'Elegant fashion illustration',
   },
 
   // ========== VEO 2.0 VIDEO TEMPLATES ==========
@@ -392,7 +392,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Resolution: 4K, 24fps cinematic`,
     tags: ['drone', 'cinematic', 'aerial', 'landscape'],
     difficulty: 'intermediate',
-    expectedOutput: 'Epic drone cinematography'
+    expectedOutput: 'Epic drone cinematography',
   },
   {
     id: 'veo_2',
@@ -413,7 +413,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Export: Social media optimized`,
     tags: ['product', 'commercial', 'marketing', 'showcase'],
     difficulty: 'intermediate',
-    expectedOutput: 'Professional product video'
+    expectedOutput: 'Professional product video',
   },
   {
     id: 'veo_3',
@@ -434,7 +434,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Output: 4K, 60fps smooth playback`,
     tags: ['timelapse', 'cinematic', 'nature', 'urban'],
     difficulty: 'beginner',
-    expectedOutput: 'Mesmerizing time-lapse video'
+    expectedOutput: 'Mesmerizing time-lapse video',
   },
   {
     id: 'veo_4',
@@ -455,7 +455,7 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - Format: Square/Vertical/Horizontal`,
     tags: ['motion', 'graphics', 'animation', 'design'],
     difficulty: 'advanced',
-    expectedOutput: 'Dynamic motion graphics animation'
+    expectedOutput: 'Dynamic motion graphics animation',
   },
   {
     id: 'veo_5',
@@ -476,25 +476,26 @@ Focus on [innovative/cost-effective/viral] approaches.`,
 - BBC Earth quality standards`,
     tags: ['nature', 'wildlife', 'documentary', 'cinematic'],
     difficulty: 'advanced',
-    expectedOutput: 'Professional nature footage'
-  }
+    expectedOutput: 'Professional nature footage',
+  },
 ];
 
 export function getTemplatesByModel(modelId: string): PromptTemplate[] {
-  return PROMPT_TEMPLATES.filter(template => template.model === modelId);
+  return PROMPT_TEMPLATES.filter((template) => template.model === modelId);
 }
 
 export function getTemplatesByCategory(category: string): PromptTemplate[] {
-  return PROMPT_TEMPLATES.filter(template => template.category === category);
+  return PROMPT_TEMPLATES.filter((template) => template.category === category);
 }
 
 export function searchTemplates(query: string): PromptTemplate[] {
   const lowerQuery = query.toLowerCase();
-  return PROMPT_TEMPLATES.filter(template => 
-    template.title.toLowerCase().includes(lowerQuery) ||
-    template.description.toLowerCase().includes(lowerQuery) ||
-    template.tags.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
-    template.prompt.toLowerCase().includes(lowerQuery)
+  return PROMPT_TEMPLATES.filter(
+    (template) =>
+      template.title.toLowerCase().includes(lowerQuery) ||
+      template.description.toLowerCase().includes(lowerQuery) ||
+      template.tags.some((tag) => tag.toLowerCase().includes(lowerQuery)) ||
+      template.prompt.toLowerCase().includes(lowerQuery)
   );
 }
 
@@ -508,12 +509,10 @@ export function getPopularTemplates(limit: number = 5): PromptTemplate[] {
     'grok_1', // Cyberpunk City
     'veo_1', // Cinematic Drone
   ];
-  
-  return PROMPT_TEMPLATES
-    .filter(template => popularIds.includes(template.id))
-    .slice(0, limit);
+
+  return PROMPT_TEMPLATES.filter((template) => popularIds.includes(template.id)).slice(0, limit);
 }
 
 export function getBeginnerTemplates(): PromptTemplate[] {
-  return PROMPT_TEMPLATES.filter(template => template.difficulty === 'beginner');
+  return PROMPT_TEMPLATES.filter((template) => template.difficulty === 'beginner');
 }

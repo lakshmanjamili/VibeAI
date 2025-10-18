@@ -13,7 +13,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
@@ -53,21 +59,18 @@ import {
   Heart,
   MessageCircle,
   Filter,
-  SortDesc
+  SortDesc,
 } from 'lucide-react';
-import { 
-  PROMPT_TEMPLATES, 
-  getTemplatesByModel, 
+import {
+  PROMPT_TEMPLATES,
+  getTemplatesByModel,
   getPopularTemplates,
-  type PromptTemplate 
+  type PromptTemplate,
 } from '@/lib/prompt-templates';
 import dynamic from 'next/dynamic';
 
 // Dynamically import NanoBananaSettings to avoid SSR issues
-const NanoBananaSettings = dynamic(
-  () => import('@/components/NanoBananaSettings'),
-  { ssr: false }
-);
+const NanoBananaSettings = dynamic(() => import('@/components/NanoBananaSettings'), { ssr: false });
 
 interface AIModel {
   id: string;
@@ -88,7 +91,7 @@ const AI_MODELS: AIModel[] = [
     icon: MessageSquare,
     category: 'chat',
     creditCost: 1,
-    color: 'text-blue-500'
+    color: 'text-blue-500',
   },
   {
     id: 'nano_banana',
@@ -98,26 +101,26 @@ const AI_MODELS: AIModel[] = [
     category: 'image',
     creditCost: 1,
     badge: 'NEW',
-    color: 'text-yellow-500'
+    color: 'text-yellow-500',
   },
   {
     id: 'imagen',
     name: 'Imagen 4.0',
-    description: 'Google\'s latest photorealistic image generation',
+    description: "Google's latest photorealistic image generation",
     icon: Camera,
     category: 'image',
     creditCost: 2,
-    color: 'text-purple-500'
+    color: 'text-purple-500',
   },
   {
     id: 'grok',
     name: 'Grok Image',
-    description: 'xAI\'s powerful image generation model',
+    description: "xAI's powerful image generation model",
     icon: Brain,
     category: 'image',
     creditCost: 2,
     badge: 'HOT',
-    color: 'text-orange-500'
+    color: 'text-orange-500',
   },
   {
     id: 'veo',
@@ -127,8 +130,8 @@ const AI_MODELS: AIModel[] = [
     category: 'video',
     creditCost: 5,
     badge: 'PREMIUM',
-    color: 'text-red-500'
-  }
+    color: 'text-red-500',
+  },
 ];
 
 interface ChatMessage {
@@ -149,7 +152,9 @@ interface GeneratedContent {
 export default function AIStudioPage() {
   const router = useRouter();
   const { userId } = useAuth();
-  const [selectedModel, setSelectedModel] = useState<AIModel>(AI_MODELS.find(m => m.id === 'nano_banana') || AI_MODELS[1]);
+  const [selectedModel, setSelectedModel] = useState<AIModel>(
+    AI_MODELS.find((m) => m.id === 'nano_banana') || AI_MODELS[1]
+  );
   const [prompt, setPrompt] = useState('');
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<PromptTemplate | null>(null);
@@ -163,7 +168,7 @@ export default function AIStudioPage() {
     temperature: 0.7,
     topP: 0.95,
     aspectRatio: '1:1',
-    responseModalities: ['IMAGE', 'TEXT']
+    responseModalities: ['IMAGE', 'TEXT'],
   });
 
   // My Uploads state
@@ -194,8 +199,8 @@ export default function AIStudioPage() {
     try {
       const response = await fetch('/api/ai/credits', {
         headers: {
-          'x-session-id': getSessionId()
-        }
+          'x-session-id': getSessionId(),
+        },
       });
       const data = await response.json();
       setCredits(data.credits);
@@ -219,7 +224,7 @@ export default function AIStudioPage() {
         offset: '0',
         category: filterCategory,
         sortBy: sortBy,
-        order: 'desc'
+        order: 'desc',
       });
 
       const response = await fetch(`/api/user/posts?${params}`);
@@ -232,7 +237,7 @@ export default function AIStudioPage() {
         toast({
           title: 'Error',
           description: data.error || 'Failed to load uploads',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
@@ -240,7 +245,7 @@ export default function AIStudioPage() {
       toast({
         title: 'Error',
         description: 'Failed to load your uploads',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoadingPosts(false);
@@ -268,10 +273,10 @@ export default function AIStudioPage() {
     const userMessage: ChatMessage = {
       role: 'user',
       content: prompt,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    setChatMessages(prev => [...prev, userMessage]);
+    setChatMessages((prev) => [...prev, userMessage]);
     setPrompt('');
     setIsGenerating(true);
 
@@ -280,12 +285,12 @@ export default function AIStudioPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-session-id': getSessionId()
+          'x-session-id': getSessionId(),
         },
         body: JSON.stringify({
           message: prompt,
-          conversationId
-        })
+          conversationId,
+        }),
       });
 
       const data = await response.json();
@@ -294,23 +299,23 @@ export default function AIStudioPage() {
         const assistantMessage: ChatMessage = {
           role: 'assistant',
           content: data.response,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
-        setChatMessages(prev => [...prev, assistantMessage]);
+        setChatMessages((prev) => [...prev, assistantMessage]);
         setConversationId(data.conversationId);
         fetchCredits();
       } else {
         toast({
           title: 'Error',
           description: data.error || 'Failed to send message',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to send message',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setIsGenerating(false);
@@ -327,20 +332,23 @@ export default function AIStudioPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-session-id': getSessionId()
+          'x-session-id': getSessionId(),
         },
         body: JSON.stringify({
           model: selectedModel.id,
           prompt: nanoBananaSettings.prompt || prompt,
-          options: selectedModel.id === 'nano_banana' ? {
-            ...nanoBananaSettings,
-            responseFormat: 'url'
-          } : {
-            numberOfImages: 1,
-            aspectRatio: '1:1',
-            responseFormat: 'url'
-          }
-        })
+          options:
+            selectedModel.id === 'nano_banana'
+              ? {
+                  ...nanoBananaSettings,
+                  responseFormat: 'url',
+                }
+              : {
+                  numberOfImages: 1,
+                  aspectRatio: '1:1',
+                  responseFormat: 'url',
+                },
+        }),
       });
 
       const data = await response.json();
@@ -352,12 +360,12 @@ export default function AIStudioPage() {
           prompt,
           urls: data.data.urls,
           text: data.data.text,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
-        setGeneratedContent(prev => [newContent, ...prev]);
+        setGeneratedContent((prev) => [newContent, ...prev]);
         setPrompt('');
         fetchCredits();
-        
+
         toast({
           title: 'Success!',
           description: `${selectedModel.name} generation complete`,
@@ -366,14 +374,14 @@ export default function AIStudioPage() {
         toast({
           title: 'Error',
           description: data.error || 'Generation failed',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to generate content',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setIsGenerating(false);
@@ -385,10 +393,12 @@ export default function AIStudioPage() {
     if (!content.urls?.[0]) return;
 
     // Find the model name from the model ID
-    const modelInfo = AI_MODELS.find(m => m.id === content.model);
+    const modelInfo = AI_MODELS.find((m) => m.id === content.model);
     const modelName = modelInfo?.name || content.model;
 
-    router.push(`/upload?ai_generated=true&url=${encodeURIComponent(content.urls[0])}&prompt=${encodeURIComponent(content.prompt)}&model=${encodeURIComponent(modelName)}`);
+    router.push(
+      `/upload?ai_generated=true&url=${encodeURIComponent(content.urls[0])}&prompt=${encodeURIComponent(content.prompt)}&model=${encodeURIComponent(modelName)}`
+    );
   };
 
   // Copy prompt
@@ -405,13 +415,13 @@ export default function AIStudioPage() {
     setPrompt(template.prompt);
     setSelectedTemplate(template);
     setShowTemplates(false);
-    
+
     // Find and select the appropriate model
-    const model = AI_MODELS.find(m => m.id === template.model);
+    const model = AI_MODELS.find((m) => m.id === template.model);
     if (model) {
       setSelectedModel(model);
     }
-    
+
     toast({
       title: 'Template loaded!',
       description: `Using "${template.title}" template`,
@@ -427,7 +437,7 @@ export default function AIStudioPage() {
   };
 
   const handleImageUpload = (base64: string) => {
-    setNanoBananaSettings(prev => ({ ...prev, inputImage: base64 }));
+    setNanoBananaSettings((prev) => ({ ...prev, inputImage: base64 }));
   };
 
   const getModelCreditsInfo = (modelId: string) => {
@@ -442,23 +452,26 @@ export default function AIStudioPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-purple-950/30 dark:via-slate-900 dark:to-blue-950/30">
       <Navbar />
 
-      <main className="container mx-auto px-4 pt-20 pb-12">
+      <main className="container mx-auto px-4 pb-12 pt-20">
         {/* Header */}
-        <motion.div 
-          className="text-center mb-8"
+        <motion.div
+          className="mb-8 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 mb-4">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
             <Rocket className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">The Only Multi-Model AI Studio</span>
-            <Badge variant="secondary" className="ml-1">World's First</Badge>
+            <Badge variant="secondary" className="ml-1">
+              World's First
+            </Badge>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
             <span className="text-gradient-supreme">Create Anything with 4+ AI Models</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Images, videos, and storybooks - all from one platform. No competitor offers this variety. Welcome to the future.
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            Images, videos, and storybooks - all from one platform. No competitor offers this
+            variety. Welcome to the future.
           </p>
         </motion.div>
 
@@ -480,7 +493,10 @@ export default function AIStudioPage() {
                     {['nano_banana', 'imagen', 'grok', 'veo'].map((key) => {
                       const value = credits[key];
                       if (!value) return null;
-                      const displayName = key === 'nano_banana' ? 'Nano Banana' : key.charAt(0).toUpperCase() + key.slice(1);
+                      const displayName =
+                        key === 'nano_banana'
+                          ? 'Nano Banana'
+                          : key.charAt(0).toUpperCase() + key.slice(1);
                       return (
                         <div key={key} className="flex items-center gap-2">
                           <Badge variant="outline" className="capitalize">
@@ -489,13 +505,16 @@ export default function AIStudioPage() {
                           <span className="text-sm">
                             {value.remaining}/{value.limit}
                           </span>
-                          <Progress value={(value.remaining / value.limit) * 100} className="w-20 h-2" />
+                          <Progress
+                            value={(value.remaining / value.limit) * 100}
+                            className="h-2 w-20"
+                          />
                         </div>
                       );
                     })}
                   </div>
                   <Button variant="outline" size="sm" onClick={() => router.push('/subscription')}>
-                    <Crown className="h-4 w-4 mr-1" />
+                    <Crown className="mr-1 h-4 w-4" />
                     Upgrade
                   </Button>
                 </div>
@@ -525,16 +544,19 @@ export default function AIStudioPage() {
             {/* Model Type Selection */}
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-4">
+                <div className="mb-4 flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">Choose Your AI Model</h3>
-                  <Badge variant="outline" className="text-xs">4+ Models Available</Badge>
+                  <Badge variant="outline" className="text-xs">
+                    4+ Models Available
+                  </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Switch between models instantly - a feature no other platform offers. From lightning-fast generation to cinematic videos.
+                <p className="mb-4 text-sm text-muted-foreground">
+                  Switch between models instantly - a feature no other platform offers. From
+                  lightning-fast generation to cinematic videos.
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {AI_MODELS.filter(m => m.category !== 'chat').map((model) => {
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                  {AI_MODELS.filter((m) => m.category !== 'chat').map((model) => {
                     const creditInfo = getModelCreditsInfo(model.id);
                     const isDisabled = creditInfo && creditInfo.remaining === 0;
 
@@ -543,22 +565,22 @@ export default function AIStudioPage() {
                         key={model.id}
                         onClick={() => !isDisabled && setSelectedModel(model)}
                         disabled={isDisabled}
-                        className={`p-6 rounded-xl border-2 transition-all text-center ${
+                        className={`rounded-xl border-2 p-6 text-center transition-all ${
                           selectedModel.id === model.id
-                            ? 'border-primary bg-primary/10 shadow-lg scale-105'
+                            ? 'scale-105 border-primary bg-primary/10 shadow-lg'
                             : 'border-border hover:border-primary/50 hover:shadow-md'
-                        } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        } ${isDisabled ? 'cursor-not-allowed opacity-50' : ''}`}
                         whileHover={!isDisabled ? { scale: 1.05 } : {}}
                         whileTap={!isDisabled ? { scale: 0.95 } : {}}
                       >
-                        <model.icon className={`h-12 w-12 mx-auto mb-3 ${model.color}`} />
-                        <div className="font-semibold mb-1">{model.name}</div>
+                        <model.icon className={`mx-auto mb-3 h-12 w-12 ${model.color}`} />
+                        <div className="mb-1 font-semibold">{model.name}</div>
                         {model.badge && (
-                          <Badge variant="secondary" className="text-[10px] mb-2">
+                          <Badge variant="secondary" className="mb-2 text-[10px]">
                             {model.badge}
                           </Badge>
                         )}
-                        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                        <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">
                           {model.description}
                         </p>
                         <div className="flex items-center justify-center gap-2 text-xs">
@@ -579,9 +601,9 @@ export default function AIStudioPage() {
             </Card>
 
             {/* Large Generation Workspace */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               {/* Main Workspace - Takes up 2 columns */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="space-y-6 lg:col-span-2">
                 <Card>
                   <CardHeader className="border-b">
                     <div className="flex items-center justify-between">
@@ -608,10 +630,10 @@ export default function AIStudioPage() {
                             selectedModel.id === 'nano_banana'
                               ? 'Describe your creative vision in detail... e.g., "A whimsical enchanted forest at twilight with glowing mushrooms, fireflies dancing in the air, and a small fairy house nestled in a tree trunk"'
                               : selectedModel.id === 'imagen'
-                              ? 'Describe the photograph you want... e.g., "Professional product photography of a luxury watch on black marble surface, studio lighting, bokeh background, ultra-detailed"'
-                              : selectedModel.id === 'veo'
-                              ? 'Describe the video scene... e.g., "Cinematic drone shot starting from ground level, slowly rising above a misty mountain range at sunrise, revealing valleys below"'
-                              : 'Describe what you want to create in detail...'
+                                ? 'Describe the photograph you want... e.g., "Professional product photography of a luxury watch on black marble surface, studio lighting, bokeh background, ultra-detailed"'
+                                : selectedModel.id === 'veo'
+                                  ? 'Describe the video scene... e.g., "Cinematic drone shot starting from ground level, slowly rising above a misty mountain range at sunrise, revealing valleys below"'
+                                  : 'Describe what you want to create in detail...'
                           }
                           value={nanoBananaSettings.prompt || prompt}
                           onChange={(e) => {
@@ -619,32 +641,33 @@ export default function AIStudioPage() {
                             setPrompt(newPrompt);
                             setSelectedTemplate(null);
                             if (selectedModel.id === 'nano_banana') {
-                              setNanoBananaSettings(prev => ({ ...prev, prompt: newPrompt }));
+                              setNanoBananaSettings((prev) => ({ ...prev, prompt: newPrompt }));
                             }
                           }}
-                          className="min-h-[200px] text-base resize-none"
+                          className="min-h-[200px] resize-none text-base"
                           disabled={isGenerating}
                         />
                         <p className="text-xs text-muted-foreground">
-                          💡 Tip: Be specific about style, lighting, colors, and composition for best results
+                          💡 Tip: Be specific about style, lighting, colors, and composition for
+                          best results
                         </p>
                       </div>
 
                       {/* Generate Button */}
                       <Button
-                        className="w-full h-14 text-lg"
+                        className="h-14 w-full text-lg"
                         size="lg"
                         onClick={handleGenerate}
                         disabled={!prompt.trim() || isGenerating}
                       >
                         {isGenerating ? (
                           <>
-                            <Loader2 className="h-6 w-6 mr-2 animate-spin" />
+                            <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                             Generating your {selectedModel.category}...
                           </>
                         ) : (
                           <>
-                            <Wand2 className="h-6 w-6 mr-2" />
+                            <Wand2 className="mr-2 h-6 w-6" />
                             Generate {selectedModel.category === 'video' ? 'Video' : 'Image'}
                           </>
                         )}
@@ -663,18 +686,18 @@ export default function AIStudioPage() {
                               <h4 className="font-semibold">Generated Result</h4>
                               <Badge variant="outline">Just now</Badge>
                             </div>
-                            <div className="relative rounded-xl overflow-hidden bg-muted border-2 border-primary/20">
+                            <div className="relative overflow-hidden rounded-xl border-2 border-primary/20 bg-muted">
                               {selectedModel.category === 'video' ? (
                                 <video
                                   src={generatedContent[0].urls[0]}
                                   controls
-                                  className="w-full object-contain max-h-[600px]"
+                                  className="max-h-[600px] w-full object-contain"
                                 />
                               ) : (
                                 <img
                                   src={generatedContent[0].urls[0]}
                                   alt="Generated"
-                                  className="w-full object-contain max-h-[600px]"
+                                  className="max-h-[600px] w-full object-contain"
                                 />
                               )}
                             </div>
@@ -684,7 +707,7 @@ export default function AIStudioPage() {
                                 className="flex-1"
                                 onClick={() => handleUploadToGallery(generatedContent[0])}
                               >
-                                <Upload className="h-4 w-4 mr-2" />
+                                <Upload className="mr-2 h-4 w-4" />
                                 Upload to Gallery
                               </Button>
                               <Button variant="outline" size="icon">
@@ -693,7 +716,11 @@ export default function AIStudioPage() {
                               <Button variant="outline" size="icon">
                                 <Share2 className="h-4 w-4" />
                               </Button>
-                              <Button variant="outline" size="icon" onClick={() => setGeneratedContent([])}>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setGeneratedContent([])}
+                              >
                                 <RefreshCw className="h-4 w-4" />
                               </Button>
                             </div>
@@ -712,7 +739,7 @@ export default function AIStudioPage() {
                   {selectedModel.id === 'nano_banana' ? (
                     <Card>
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-sm">
                           <Settings2 className="h-4 w-4" />
                           Quick Settings
                         </CardTitle>
@@ -728,7 +755,7 @@ export default function AIStudioPage() {
                   ) : (
                     <Card>
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-sm">
                           <Settings2 className="h-4 w-4" />
                           Settings
                         </CardTitle>
@@ -772,42 +799,90 @@ export default function AIStudioPage() {
                   {/* Pro Tips */}
                   <Card>
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-sm flex items-center gap-2">
+                      <CardTitle className="flex items-center gap-2 text-sm">
                         <Lightbulb className="h-4 w-4 text-primary" />
                         Pro Tips
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       {selectedModel.id === 'nano_banana' && (
-                        <ul className="text-xs text-muted-foreground space-y-2">
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Use descriptive adjectives for style</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Mention lighting and mood</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Specify composition details</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Add artistic references if needed</span></li>
+                        <ul className="space-y-2 text-xs text-muted-foreground">
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Use descriptive adjectives for style</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Mention lighting and mood</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Specify composition details</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Add artistic references if needed</span>
+                          </li>
                         </ul>
                       )}
                       {selectedModel.id === 'imagen' && (
-                        <ul className="text-xs text-muted-foreground space-y-2">
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Use photography terminology</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Mention camera & lens details</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Specify depth of field</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Describe lighting setup</span></li>
+                        <ul className="space-y-2 text-xs text-muted-foreground">
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Use photography terminology</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Mention camera & lens details</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Specify depth of field</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Describe lighting setup</span>
+                          </li>
                         </ul>
                       )}
                       {selectedModel.id === 'veo' && (
-                        <ul className="text-xs text-muted-foreground space-y-2">
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Describe camera movements</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Mention pacing & timing</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Specify video style</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Add transition details</span></li>
+                        <ul className="space-y-2 text-xs text-muted-foreground">
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Describe camera movements</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Mention pacing & timing</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Specify video style</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Add transition details</span>
+                          </li>
                         </ul>
                       )}
                       {selectedModel.id === 'grok' && (
-                        <ul className="text-xs text-muted-foreground space-y-2">
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Great for complex scenes</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Handles artistic styles well</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Specify materials & textures</span></li>
-                          <li className="flex gap-2"><span className="text-primary">•</span><span>Works with surreal concepts</span></li>
+                        <ul className="space-y-2 text-xs text-muted-foreground">
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Great for complex scenes</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Handles artistic styles well</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Specify materials & textures</span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>Works with surreal concepts</span>
+                          </li>
                         </ul>
                       )}
                     </CardContent>
@@ -828,24 +903,21 @@ export default function AIStudioPage() {
                       My Uploads
                     </CardTitle>
                     <CardDescription>
-                      All your uploaded content - {userPosts.length} {userPosts.length === 1 ? 'post' : 'posts'}
+                      All your uploaded content - {userPosts.length}{' '}
+                      {userPosts.length === 1 ? 'post' : 'posts'}
                     </CardDescription>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => router.push('/upload')}
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
+                  <Button variant="outline" size="sm" onClick={() => router.push('/upload')}>
+                    <Upload className="mr-2 h-4 w-4" />
                     Upload New
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
                 {/* Filters and Sorting */}
-                <div className="flex flex-wrap gap-4 mb-6 p-4 border rounded-lg bg-muted/30">
-                  <div className="flex-1 min-w-[200px]">
-                    <Label className="text-xs mb-2 block">Filter by Category</Label>
+                <div className="mb-6 flex flex-wrap gap-4 rounded-lg border bg-muted/30 p-4">
+                  <div className="min-w-[200px] flex-1">
+                    <Label className="mb-2 block text-xs">Filter by Category</Label>
                     <Select value={filterCategory} onValueChange={setFilterCategory}>
                       <SelectTrigger className="h-9">
                         <SelectValue />
@@ -860,8 +932,8 @@ export default function AIStudioPage() {
                     </Select>
                   </div>
 
-                  <div className="flex-1 min-w-[200px]">
-                    <Label className="text-xs mb-2 block">Sort By</Label>
+                  <div className="min-w-[200px] flex-1">
+                    <Label className="mb-2 block text-xs">Sort By</Label>
                     <Select value={sortBy} onValueChange={setSortBy}>
                       <SelectTrigger className="h-9">
                         <SelectValue />
@@ -885,17 +957,17 @@ export default function AIStudioPage() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-20"
+                    className="py-20 text-center"
                   >
-                    <div className="bg-primary/5 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                    <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-primary/5">
                       <Grid3x3 className="h-12 w-12 text-primary" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">No uploads yet</h3>
-                    <p className="text-muted-foreground mb-6">
+                    <h3 className="mb-2 text-xl font-semibold">No uploads yet</h3>
+                    <p className="mb-6 text-muted-foreground">
                       Start creating and sharing your AI-generated content
                     </p>
                     <Button onClick={() => setActiveTab('create')}>
-                      <Wand2 className="h-4 w-4 mr-2" />
+                      <Wand2 className="mr-2 h-4 w-4" />
                       Create Now
                     </Button>
                   </motion.div>
@@ -905,7 +977,7 @@ export default function AIStudioPage() {
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4"
+                      className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4"
                     >
                       {userPosts.map((post, index) => (
                         <motion.div
@@ -914,17 +986,14 @@ export default function AIStudioPage() {
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: index * 0.05 }}
                           whileHover={{ scale: 1.02 }}
-                          className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer"
+                          className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg"
                           onClick={() => router.push(`/post/${post.id}`)}
                         >
                           {/* Image/Video */}
                           {post.category === 'video' ? (
-                            <div className="relative w-full h-full">
-                              <video
-                                src={post.file_url}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                            <div className="relative h-full w-full">
+                              <video src={post.file_url} className="h-full w-full object-cover" />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                                 <Video className="h-12 w-12 text-white" />
                               </div>
                             </div>
@@ -932,14 +1001,16 @@ export default function AIStudioPage() {
                             <img
                               src={post.thumbnail_url || post.file_url}
                               alt={post.title}
-                              className="w-full h-full object-cover"
+                              className="h-full w-full object-cover"
                             />
                           )}
 
                           {/* Overlay on Hover */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                             <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                              <h4 className="font-semibold text-sm line-clamp-1 mb-2">{post.title}</h4>
+                              <h4 className="mb-2 line-clamp-1 text-sm font-semibold">
+                                {post.title}
+                              </h4>
                               <div className="flex items-center gap-4 text-xs">
                                 <div className="flex items-center gap-1">
                                   <Eye className="h-3 w-3" />
@@ -958,16 +1029,19 @@ export default function AIStudioPage() {
                           </div>
 
                           {/* Category Badge */}
-                          <div className="absolute top-2 right-2">
-                            <Badge variant="secondary" className="text-[10px] capitalize bg-black/50 text-white border-none">
+                          <div className="absolute right-2 top-2">
+                            <Badge
+                              variant="secondary"
+                              className="border-none bg-black/50 text-[10px] capitalize text-white"
+                            >
                               {post.category}
                             </Badge>
                           </div>
 
                           {/* AI Model Badge if applicable */}
                           {post.ai_model && (
-                            <div className="absolute top-2 left-2">
-                              <Badge className="text-[10px] bg-primary/80 border-none">
+                            <div className="absolute left-2 top-2">
+                              <Badge className="border-none bg-primary/80 text-[10px]">
                                 AI: {post.ai_model}
                               </Badge>
                             </div>
@@ -978,21 +1052,17 @@ export default function AIStudioPage() {
 
                     {/* Load More Button */}
                     {hasMorePosts && (
-                      <div className="text-center mt-8">
-                        <Button
-                          variant="outline"
-                          onClick={fetchUserPosts}
-                          disabled={loadingPosts}
-                        >
+                      <div className="mt-8 text-center">
+                        <Button variant="outline" onClick={fetchUserPosts} disabled={loadingPosts}>
                           {loadingPosts ? (
                             <>
-                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                               Loading...
                             </>
                           ) : (
                             <>
                               Load More
-                              <ChevronRight className="h-4 w-4 ml-2" />
+                              <ChevronRight className="ml-2 h-4 w-4" />
                             </>
                           )}
                         </Button>
@@ -1013,31 +1083,31 @@ export default function AIStudioPage() {
               </CardHeader>
               <CardContent>
                 {generatedContent.length === 0 ? (
-                  <div className="text-center py-12">
-                    <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <div className="py-12 text-center">
+                    <ImageIcon className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                     <p className="text-muted-foreground">No generations yet</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {generatedContent.map((content) => (
                       <Card key={content.id} className="overflow-hidden">
                         {content.urls?.[0] && (
-                          <div className="aspect-square relative">
-                            <img 
-                              src={content.urls[0]} 
-                              alt={content.prompt} 
-                              className="w-full h-full object-cover"
+                          <div className="relative aspect-square">
+                            <img
+                              src={content.urls[0]}
+                              alt={content.prompt}
+                              className="h-full w-full object-cover"
                             />
                           </div>
                         )}
                         <CardContent className="p-4">
-                          <p className="text-sm line-clamp-2 mb-2">{content.prompt}</p>
+                          <p className="mb-2 line-clamp-2 text-sm">{content.prompt}</p>
                           <div className="flex items-center justify-between">
                             <Badge variant="outline" className="text-xs">
-                              {AI_MODELS.find(m => m.id === content.model)?.name}
+                              {AI_MODELS.find((m) => m.id === content.model)?.name}
                             </Badge>
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               variant="ghost"
                               onClick={() => handleUploadToGallery(content)}
                             >
@@ -1068,32 +1138,30 @@ export default function AIStudioPage() {
               <CardContent>
                 {/* Popular Templates */}
                 <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="mb-4 flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-primary" />
                     <h3 className="font-semibold">Popular Templates</h3>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {popularTemplates.map((template) => (
                       <motion.div
                         key={template.id}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        <Card 
-                          className="cursor-pointer hover:shadow-lg transition-all hover:border-primary/50"
+                        <Card
+                          className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-lg"
                           onClick={() => handleUseTemplate(template)}
                         >
                           <CardContent className="p-4">
-                            <div className="flex items-start justify-between mb-2">
+                            <div className="mb-2 flex items-start justify-between">
                               <Badge variant="outline" className="text-xs">
-                                {AI_MODELS.find(m => m.id === template.model)?.name}
+                                {AI_MODELS.find((m) => m.id === template.model)?.name}
                               </Badge>
-                              <Badge className="text-xs">
-                                {template.difficulty}
-                              </Badge>
+                              <Badge className="text-xs">{template.difficulty}</Badge>
                             </div>
-                            <h4 className="font-semibold mb-1">{template.title}</h4>
-                            <p className="text-sm text-muted-foreground mb-3">
+                            <h4 className="mb-1 font-semibold">{template.title}</h4>
+                            <p className="mb-3 text-sm text-muted-foreground">
                               {template.description}
                             </p>
                             <div className="flex flex-wrap gap-1">
@@ -1103,8 +1171,8 @@ export default function AIStudioPage() {
                                 </Badge>
                               ))}
                             </div>
-                            <div className="mt-3 pt-3 border-t">
-                              <p className="text-xs text-muted-foreground line-clamp-2">
+                            <div className="mt-3 border-t pt-3">
+                              <p className="line-clamp-2 text-xs text-muted-foreground">
                                 {template.prompt.slice(0, 100)}...
                               </p>
                             </div>
@@ -1119,51 +1187,45 @@ export default function AIStudioPage() {
 
                 {/* Templates by Model */}
                 <div>
-                  <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <h3 className="mb-4 flex items-center gap-2 font-semibold">
                     <Lightbulb className="h-4 w-4 text-primary" />
                     All Templates by Model
                   </h3>
                   <Tabs defaultValue={AI_MODELS[0].id} className="space-y-4">
                     <TabsList className="grid w-full grid-cols-5">
                       {AI_MODELS.map((model) => (
-                        <TabsTrigger 
-                          key={model.id} 
-                          value={model.id}
-                          className="text-xs"
-                        >
-                          <model.icon className="h-3 w-3 mr-1" />
+                        <TabsTrigger key={model.id} value={model.id} className="text-xs">
+                          <model.icon className="mr-1 h-3 w-3" />
                           {model.name.split(' ')[0]}
                         </TabsTrigger>
                       ))}
                     </TabsList>
-                    
+
                     {AI_MODELS.map((model) => {
                       const templates = getTemplatesByModel(model.id);
                       return (
                         <TabsContent key={model.id} value={model.id}>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             {templates.map((template) => (
-                              <Card 
+                              <Card
                                 key={template.id}
-                                className="cursor-pointer hover:shadow-md transition-all hover:border-primary/50"
+                                className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-md"
                                 onClick={() => handleUseTemplate(template)}
                               >
                                 <CardContent className="p-4">
-                                  <div className="flex items-start justify-between mb-2">
+                                  <div className="mb-2 flex items-start justify-between">
                                     <h4 className="font-semibold">{template.title}</h4>
-                                    <Badge className="text-xs">
-                                      {template.difficulty}
-                                    </Badge>
+                                    <Badge className="text-xs">{template.difficulty}</Badge>
                                   </div>
-                                  <p className="text-sm text-muted-foreground mb-3">
+                                  <p className="mb-3 text-sm text-muted-foreground">
                                     {template.description}
                                   </p>
-                                  <div className="bg-muted/50 rounded-md p-3">
-                                    <p className="text-xs font-mono line-clamp-3">
+                                  <div className="rounded-md bg-muted/50 p-3">
+                                    <p className="line-clamp-3 font-mono text-xs">
                                       {template.prompt}
                                     </p>
                                   </div>
-                                  <div className="flex items-center justify-between mt-3">
+                                  <div className="mt-3 flex items-center justify-between">
                                     <div className="flex flex-wrap gap-1">
                                       {template.tags.slice(0, 2).map((tag) => (
                                         <Badge key={tag} variant="secondary" className="text-xs">
@@ -1172,7 +1234,7 @@ export default function AIStudioPage() {
                                       ))}
                                     </div>
                                     <Button size="sm" variant="ghost">
-                                      <Copy className="h-3 w-3 mr-1" />
+                                      <Copy className="mr-1 h-3 w-3" />
                                       Use
                                     </Button>
                                   </div>
@@ -1181,8 +1243,8 @@ export default function AIStudioPage() {
                             ))}
                           </div>
                           {templates.length === 0 && (
-                            <div className="text-center py-8">
-                              <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                            <div className="py-8 text-center">
+                              <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                               <p className="text-muted-foreground">
                                 No templates available for this model yet
                               </p>
@@ -1199,7 +1261,7 @@ export default function AIStudioPage() {
 
           {/* Chat Tab */}
           <TabsContent value="chat">
-            <Card className="h-[600px] flex flex-col">
+            <Card className="flex h-[600px] flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bot className="h-5 w-5" />
@@ -1209,15 +1271,12 @@ export default function AIStudioPage() {
                   Chat with Gemini AI for help, ideas, or conversation
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
+              <CardContent className="flex flex-1 flex-col">
                 {/* Chat Messages */}
-                <ScrollArea 
-                  ref={chatScrollRef}
-                  className="flex-1 pr-4 mb-4"
-                >
+                <ScrollArea ref={chatScrollRef} className="mb-4 flex-1 pr-4">
                   {chatMessages.length === 0 ? (
-                    <div className="text-center py-12">
-                      <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <div className="py-12 text-center">
+                      <MessageSquare className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                       <p className="text-muted-foreground">Start a conversation</p>
                     </div>
                   ) : (
@@ -1230,20 +1289,22 @@ export default function AIStudioPage() {
                             animate={{ opacity: 1, y: 0 }}
                             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                           >
-                            <div className={`max-w-[80%] rounded-lg p-3 ${
-                              message.role === 'user' 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'bg-muted'
-                            }`}>
-                              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                            <div
+                              className={`max-w-[80%] rounded-lg p-3 ${
+                                message.role === 'user'
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted'
+                              }`}
+                            >
+                              <p className="whitespace-pre-wrap text-sm">{message.content}</p>
                               {message.role === 'assistant' && (
-                                <Button 
-                                  variant="ghost" 
+                                <Button
+                                  variant="ghost"
                                   size="sm"
                                   className="mt-2 h-6 px-2"
                                   onClick={() => handleCopyPrompt(message.content)}
                                 >
-                                  <Copy className="h-3 w-3 mr-1" />
+                                  <Copy className="mr-1 h-3 w-3" />
                                   Copy
                                 </Button>
                               )}
@@ -1264,10 +1325,7 @@ export default function AIStudioPage() {
                     onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleChatSend()}
                     disabled={isGenerating}
                   />
-                  <Button 
-                    onClick={handleChatSend}
-                    disabled={!prompt.trim() || isGenerating}
-                  >
+                  <Button onClick={handleChatSend} disabled={!prompt.trim() || isGenerating}>
                     {isGenerating ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (

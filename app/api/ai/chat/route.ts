@@ -8,15 +8,12 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth();
     const sessionId = request.headers.get('x-session-id');
     const userIdentifier = userId || sessionId || 'anonymous';
-    
+
     const body = await request.json();
     const { message, conversationId } = body;
 
     if (!message) {
-      return NextResponse.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
     // Check chat credits
@@ -43,7 +40,7 @@ export async function POST(request: NextRequest) {
           nano_banana_used: 0,
           nano_banana_limit: 10,
           chat_messages_used: 0,
-          chat_messages_limit: 100
+          chat_messages_limit: 100,
         })
         .select()
         .single();
@@ -79,7 +76,7 @@ export async function POST(request: NextRequest) {
           user_id: userIdentifier,
           title: message.substring(0, 50),
           model: 'gemini',
-          messages: []
+          messages: [],
         })
         .select()
         .single();
@@ -90,10 +87,7 @@ export async function POST(request: NextRequest) {
     const result = await generateWithGeminiChat(message);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
     // Update conversation with new messages
@@ -105,9 +99,9 @@ export async function POST(request: NextRequest) {
 
     await (supabase as any)
       .from('ai_conversations')
-      .update({ 
+      .update({
         messages,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', conversation.id);
 
@@ -121,15 +115,11 @@ export async function POST(request: NextRequest) {
       success: true,
       conversationId: conversation.id,
       response: result.data?.text,
-      messages
+      messages,
     });
-
   } catch (error: any) {
     console.error('Chat error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Chat failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Chat failed' }, { status: 500 });
   }
 }
 
@@ -151,9 +141,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ conversations: data });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

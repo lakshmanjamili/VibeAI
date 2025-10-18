@@ -48,17 +48,14 @@ export default function CreatorSpotlight() {
             .eq('user_id', user.id);
 
           // Get total likes
-          const { data: posts } = await supabase
-            .from('posts')
-            .select('id')
-            .eq('user_id', user.id);
+          const { data: posts } = await supabase.from('posts').select('id').eq('user_id', user.id);
 
           let totalLikes = 0;
           let totalViews = 0;
 
           if (posts && posts.length > 0) {
             const postIds = posts.map((p: any) => p.id);
-            
+
             // Get likes count
             const { count: likesCount } = await supabase
               .from('likes')
@@ -73,7 +70,8 @@ export default function CreatorSpotlight() {
               .select('view_count')
               .eq('user_id', user.id);
 
-            totalViews = viewData?.reduce((sum: number, post: any) => sum + (post.view_count || 0), 0) || 0;
+            totalViews =
+              viewData?.reduce((sum: number, post: any) => sum + (post.view_count || 0), 0) || 0;
           }
 
           return {
@@ -149,18 +147,16 @@ export default function CreatorSpotlight() {
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
+                <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-                  <div className="h-3 w-32 bg-muted animate-pulse rounded" />
+                  <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                  <div className="h-3 w-32 animate-pulse rounded bg-muted" />
                 </div>
               </div>
             ))}
           </div>
         ) : creators.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">
-            No creators yet. Be the first!
-          </p>
+          <p className="py-8 text-center text-muted-foreground">No creators yet. Be the first!</p>
         ) : (
           <div className="space-y-4">
             {creators.map((creator, index) => (
@@ -171,7 +167,7 @@ export default function CreatorSpotlight() {
                 transition={{ duration: 0.3, delay: index * 0.05 }}
               >
                 <Link href={`/user/${creator.id}`}>
-                  <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                  <div className="group flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted/50">
                     <div className="relative">
                       <Avatar>
                         <AvatarImage src={creator.avatar_url || ''} />
@@ -180,15 +176,17 @@ export default function CreatorSpotlight() {
                         </AvatarFallback>
                       </Avatar>
                       {creator.rank && creator.rank <= 3 && (
-                        <div className={`absolute -top-1 -right-1 rounded-full p-1 ${getRankBadge(creator.rank)}`}>
+                        <div
+                          className={`absolute -right-1 -top-1 rounded-full p-1 ${getRankBadge(creator.rank)}`}
+                        >
                           {getRankIcon(creator.rank)}
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold group-hover:text-primary transition-colors">
+                        <p className="font-semibold transition-colors group-hover:text-primary">
                           {creator.username}
                         </p>
                         {creator.rank === 1 && (
@@ -205,7 +203,7 @@ export default function CreatorSpotlight() {
                         <span>{creator.total_views} views</span>
                       </div>
                     </div>
-                    
+
                     <div className="text-right">
                       <div className="text-2xl font-bold text-muted-foreground">
                         #{creator.rank}

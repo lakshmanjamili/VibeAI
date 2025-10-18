@@ -1,7 +1,9 @@
 # Supabase Storage Setup Guide
 
 ## Overview
+
 VibeAI uses Supabase Storage to store all AI-generated images and videos. This ensures your generated content is:
+
 - ✅ Stored in the cloud (not locally)
 - ✅ Publicly accessible via CDN URLs
 - ✅ Scalable and reliable
@@ -39,6 +41,7 @@ Run the SQL script in your Supabase SQL Editor:
 4. Click **"Run"**
 
 This will create the following policies:
+
 - ✅ Authenticated users can upload AI generations
 - ✅ Anonymous users can upload AI generations
 - ✅ Anyone can view AI generations (public access)
@@ -59,6 +62,7 @@ AND policyname LIKE '%AI%';
 ```
 
 You should see:
+
 - ✅ 1 bucket named `ai-generations`
 - ✅ 4 storage policies
 
@@ -75,7 +79,7 @@ You should see:
      .from('ai-generations')
      .upload(`generated/${filename}`, buffer, {
        contentType: 'image/jpeg',
-       cacheControl: '3600'
+       cacheControl: '3600',
      });
    ```
 4. **Public URL is returned** to the client
@@ -84,6 +88,7 @@ You should see:
 ### File Naming Convention
 
 Generated files are stored with this pattern:
+
 ```
 ai-generations/
   └── generated/
@@ -105,6 +110,7 @@ Format: `gen_{timestamp}_{random}.jpg`
 ### Images not showing up
 
 **Checklist**:
+
 1. ✅ Bucket is marked as **public**
 2. ✅ "Anyone can view AI generations" policy is active
 3. ✅ CORS is enabled (Supabase does this automatically for public buckets)
@@ -123,11 +129,13 @@ All new images will be stored in Supabase Storage.
 ## Storage Limits
 
 ### Free Tier (Supabase)
+
 - **Storage**: 1 GB
 - **Bandwidth**: 2 GB/month
 - **File uploads**: Unlimited
 
 ### Recommendations
+
 - Monitor your usage in Supabase dashboard
 - Set up alerts for when you approach limits
 - Upgrade to Pro plan ($25/month) when needed:
@@ -154,8 +162,9 @@ const thumbnailUrl = `${url}?width=200&height=200`;
 ### Set Cache Headers
 
 Already configured in the upload code:
+
 ```typescript
-cacheControl: '3600' // Cache for 1 hour
+cacheControl: '3600'; // Cache for 1 hour
 ```
 
 Adjust this value based on your needs.

@@ -7,10 +7,7 @@ export async function GET(request: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Get user's database ID from clerk_id
@@ -21,10 +18,7 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Get query parameters
@@ -74,15 +68,11 @@ export async function GET(request: NextRequest) {
         total: count || 0,
         limit,
         offset,
-        hasMore: (count || 0) > offset + limit
-      }
+        hasMore: (count || 0) > offset + limit,
+      },
     });
-
   } catch (error: any) {
     console.error('Error fetching user posts:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch posts' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Failed to fetch posts' }, { status: 500 });
   }
 }

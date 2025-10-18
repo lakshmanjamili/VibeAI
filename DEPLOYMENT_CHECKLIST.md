@@ -3,6 +3,7 @@
 ## ✅ Pre-Deployment Setup
 
 ### 1. Supabase Storage Setup
+
 - [ ] Run `documents/sql/STORAGE_SETUP.sql` in Supabase SQL Editor
 - [ ] Verify bucket `ai-generations` is created and public
 - [ ] Verify 4 storage policies are active
@@ -11,9 +12,11 @@
 **Reference**: See `STORAGE_SETUP_GUIDE.md` for detailed instructions
 
 ### 2. Environment Variables
+
 Copy `.env.local.example` to `.env.local` and fill in:
 
 **Required**:
+
 - [ ] `NEXT_PUBLIC_SUPABASE_URL`
 - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - [ ] `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
@@ -21,11 +24,13 @@ Copy `.env.local.example` to `.env.local` and fill in:
 - [ ] `GEMINI_API_KEY` (for Nano Banana)
 
 **Optional** (add as needed):
+
 - [ ] `XAI_API_KEY` (for Grok)
 - [ ] `WAN_API_KEY` (for Wan AI)
 - [ ] `OPENAI_API_KEY` (for additional models)
 
 ### 3. Database Setup
+
 Run these SQL files in order:
 
 1. [ ] `documents/sql/01_database_schema.sql` - Core tables
@@ -33,6 +38,7 @@ Run these SQL files in order:
 3. [ ] `documents/sql/STORAGE_SETUP.sql` - Storage bucket & policies
 
 ### 4. Clean Up Local Storage
+
 If you have old local images, delete them:
 
 ```bash
@@ -46,6 +52,7 @@ New images will be stored in Supabase Storage automatically.
 ### Vercel Deployment
 
 1. **Push to GitHub**:
+
    ```bash
    git add .
    git commit -m "Fix: Use Supabase Storage for AI generations"
@@ -76,6 +83,7 @@ New images will be stored in Supabase Storage automatically.
 ## 🔍 Testing Checklist
 
 ### AI Generation Tests
+
 - [ ] **Nano Banana**: Text-to-image generation
 - [ ] **Nano Banana**: Image-to-image editing (upload + prompt)
 - [ ] **Nano Banana**: All settings work (temperature, aspect ratio, etc.)
@@ -84,6 +92,7 @@ New images will be stored in Supabase Storage automatically.
 - [ ] **Veo**: Video generation (if API key configured)
 
 ### Storage Tests
+
 - [ ] Images save to Supabase Storage
 - [ ] Public URLs are accessible
 - [ ] Images load in AI Studio preview
@@ -91,6 +100,7 @@ New images will be stored in Supabase Storage automatically.
 - [ ] Upload to Gallery works with generated images
 
 ### User Experience Tests
+
 - [ ] Sign up flow works
 - [ ] Sign in flow works
 - [ ] AI credits are tracked correctly
@@ -103,6 +113,7 @@ New images will be stored in Supabase Storage automatically.
 ### Issue: Images not saving
 
 **Check**:
+
 1. Supabase Storage bucket exists and is public
 2. Storage policies are configured correctly
 3. `NEXT_PUBLIC_SUPABASE_URL` is correct in env
@@ -113,11 +124,13 @@ New images will be stored in Supabase Storage automatically.
 ### Issue: 403 Forbidden on images
 
 **Check**:
+
 1. Bucket is marked as **public** in Supabase
 2. "Anyone can view AI generations" policy exists
 3. RLS is NOT blocking access
 
 **Fix**:
+
 ```sql
 -- Make bucket public
 UPDATE storage.buckets
@@ -128,6 +141,7 @@ WHERE id = 'ai-generations';
 ### Issue: API key errors
 
 **Check**:
+
 1. `GEMINI_API_KEY` is set in environment variables
 2. API key is valid (test at https://makersuite.google.com)
 3. Billing is enabled on Google Cloud (if using production API)
@@ -137,11 +151,13 @@ WHERE id = 'ai-generations';
 ### Issue: Credits not deducting
 
 **Check**:
+
 1. `AI_CREDITS_MIGRATION.sql` was run
 2. User exists in `user_ai_credits` table
 3. Server logs show credit deduction logic
 
 **Fix**:
+
 ```sql
 -- Check user credits
 SELECT * FROM user_ai_credits WHERE user_id = 'your_user_id';
@@ -150,16 +166,19 @@ SELECT * FROM user_ai_credits WHERE user_id = 'your_user_id';
 ## 📊 Monitoring
 
 ### Supabase Dashboard
+
 - **Storage**: Monitor usage and bandwidth
 - **Database**: Check query performance
 - **Logs**: View real-time logs for errors
 
 ### Vercel Dashboard
+
 - **Analytics**: Monitor page views and performance
 - **Logs**: Check deployment and runtime logs
 - **Usage**: Track bandwidth and function executions
 
 ### Set Up Alerts
+
 - [ ] Supabase storage approaching 80% capacity
 - [ ] API error rate > 5%
 - [ ] Credit system errors
@@ -178,21 +197,25 @@ SELECT * FROM user_ai_credits WHERE user_id = 'your_user_id';
 ## 📈 Performance Optimization
 
 ### Image Optimization
+
 - [ ] Use Supabase image transformations for thumbnails
 - [ ] Set appropriate cache headers (already configured)
 - [ ] Consider CDN caching
 
 ### Database
+
 - [ ] Indexes on frequently queried columns
 - [ ] Vacuum database regularly (Supabase does this automatically)
 
 ### API
+
 - [ ] Rate limiting configured
 - [ ] Timeout settings appropriate (60s for Nano Banana)
 
 ## 🎉 Launch Checklist
 
 **Final Checks Before Going Live**:
+
 - [ ] All environment variables set in production
 - [ ] Database migrations run successfully
 - [ ] Storage bucket configured and tested
@@ -209,6 +232,7 @@ SELECT * FROM user_ai_credits WHERE user_id = 'your_user_id';
 ## 📞 Support
 
 **Need Help?**
+
 - 📖 [VibeAI Documentation](./README.md)
 - 📖 [Supabase Docs](https://supabase.com/docs)
 - 📖 [Clerk Docs](https://clerk.com/docs)

@@ -3,21 +3,21 @@ import { Sparkles, Github, Twitter, Zap, Heart, Code2, Rocket } from 'lucide-rea
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-border/40 bg-gradient-to-b from-background/95 to-background backdrop-blur overflow-hidden">
+    <footer className="relative overflow-hidden border-t border-border/40 bg-gradient-to-b from-background/95 to-background backdrop-blur">
       {/* Animated background effect */}
-      <div className="absolute inset-0 gradient-aurora pointer-events-none" />
-      
-      <div className="container mx-auto px-4 py-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <div className="gradient-aurora pointer-events-none absolute inset-0" />
+
+      <div className="container relative z-10 mx-auto px-4 py-12">
+        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <div className="relative">
-                <Sparkles className="h-6 w-6 text-primary animate-pulse" />
-                <div className="absolute inset-0 blur-xl bg-primary/50 animate-pulse" />
+                <Sparkles className="h-6 w-6 animate-pulse text-primary" />
+                <div className="absolute inset-0 animate-pulse bg-primary/50 blur-xl" />
               </div>
-              <span className="font-bold text-xl text-gradient-supreme">VibeAI</span>
+              <span className="text-gradient-supreme text-xl font-bold">VibeAI</span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               Your creative hub for AI-generated content. Powered by cutting-edge AI technology.
             </p>
             <div className="flex items-center gap-2 text-xs">
@@ -25,90 +25,142 @@ export default function Footer() {
               <span className="text-muted-foreground">Lightning fast</span>
             </div>
           </div>
-          
+
           <div>
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <h3 className="mb-4 flex items-center gap-2 font-semibold">
               <Rocket className="h-4 w-4 text-primary" />
               Explore
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/gallery" className="hover:text-primary transition-all hover:translate-x-1 inline-block">Gallery</Link></li>
-              <li><Link href="/weekly-best" className="hover:text-primary transition-all hover:translate-x-1 inline-block">Weekly Best</Link></li>
-              <li><Link href="/top-likes" className="hover:text-primary transition-all hover:translate-x-1 inline-block">Top Likes</Link></li>
-              <li><Link href="/upload" className="hover:text-primary transition-all hover:translate-x-1 inline-block">Upload</Link></li>
+              <li>
+                <Link
+                  href="/gallery"
+                  className="inline-block transition-all hover:translate-x-1 hover:text-primary"
+                >
+                  Gallery
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/weekly-best"
+                  className="inline-block transition-all hover:translate-x-1 hover:text-primary"
+                >
+                  Weekly Best
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/top-likes"
+                  className="inline-block transition-all hover:translate-x-1 hover:text-primary"
+                >
+                  Top Likes
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/upload"
+                  className="inline-block transition-all hover:translate-x-1 hover:text-primary"
+                >
+                  Upload
+                </Link>
+              </li>
             </ul>
           </div>
-          
+
           <div>
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <h3 className="mb-4 flex items-center gap-2 font-semibold">
               <Heart className="h-4 w-4 text-red-500" />
               Community
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/about" className="hover:text-primary transition-all hover:translate-x-1 inline-block">About</Link></li>
-              <li><Link href="/guidelines" className="hover:text-primary transition-all hover:translate-x-1 inline-block">Guidelines</Link></li>
-              <li><Link href="/creators" className="hover:text-primary transition-all hover:translate-x-1 inline-block">Top Creators</Link></li>
-              <li><Link href="/dashboard" className="hover:text-primary transition-all hover:translate-x-1 inline-block">Dashboard</Link></li>
+              <li>
+                <Link
+                  href="/about"
+                  className="inline-block transition-all hover:translate-x-1 hover:text-primary"
+                >
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/guidelines"
+                  className="inline-block transition-all hover:translate-x-1 hover:text-primary"
+                >
+                  Guidelines
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/creators"
+                  className="inline-block transition-all hover:translate-x-1 hover:text-primary"
+                >
+                  Top Creators
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard"
+                  className="inline-block transition-all hover:translate-x-1 hover:text-primary"
+                >
+                  Dashboard
+                </Link>
+              </li>
             </ul>
           </div>
-          
+
           <div>
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <h3 className="mb-4 flex items-center gap-2 font-semibold">
               <Code2 className="h-4 w-4 text-green-500" />
               Connect
             </h3>
-            <div className="flex space-x-4 mb-4">
-              <a 
-                href="https://github.com/loukriai" 
-                target="_blank" 
+            <div className="mb-4 flex space-x-4">
+              <a
+                href="https://github.com/loukriai"
+                target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-all hover:scale-110"
+                className="text-muted-foreground transition-all hover:scale-110 hover:text-primary"
               >
                 <Github className="h-5 w-5" />
               </a>
-              <a 
-                href="https://twitter.com/loukriai" 
+              <a
+                href="https://twitter.com/loukriai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-all hover:scale-110"
+                className="text-muted-foreground transition-all hover:scale-110 hover:text-primary"
               >
                 <Twitter className="h-5 w-5" />
               </a>
             </div>
-            <Link 
-              href="https://loukriai.com" 
+            <Link
+              href="https://loukriai.com"
               target="_blank"
-              className="text-sm text-primary hover:text-primary/80 font-semibold transition-all inline-flex items-center gap-1"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-primary transition-all hover:text-primary/80"
             >
               Visit Loukri AI
               <Rocket className="h-3 w-3" />
             </Link>
           </div>
         </div>
-        
+
         {/* Loukri AI Branding Section */}
-        <div className="relative rounded-xl bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 p-6 mb-8 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-pink-500/5 animate-gradient-shift" />
+        <div className="relative mb-8 overflow-hidden rounded-xl bg-gradient-to-r from-primary/10 via-purple-500/10 to-pink-500/10 p-6">
+          <div className="absolute inset-0 animate-gradient-shift bg-gradient-to-r from-primary/5 via-transparent to-pink-500/5" />
           <div className="relative z-10 text-center">
-            <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="mb-3 flex items-center justify-center gap-3">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
               <div className="flex items-center gap-2">
-                <Code2 className="h-5 w-5 text-primary animate-pulse" />
-                <span className="text-sm font-bold text-gradient-supreme">BUILT BY</span>
-                <Code2 className="h-5 w-5 text-primary animate-pulse" />
+                <Code2 className="h-5 w-5 animate-pulse text-primary" />
+                <span className="text-gradient-supreme text-sm font-bold">BUILT BY</span>
+                <Code2 className="h-5 w-5 animate-pulse text-primary" />
               </div>
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             </div>
-            
-            <Link 
-              href="https://loukriai.com" 
-              target="_blank"
-              className="inline-block group"
-            >
-              <h2 className="text-2xl md:text-3xl font-bold text-gradient-supreme mb-2 group-hover:scale-105 transition-transform">
+
+            <Link href="https://loukriai.com" target="_blank" className="group inline-block">
+              <h2 className="text-gradient-supreme mb-2 text-2xl font-bold transition-transform group-hover:scale-105 md:text-3xl">
                 Loukri AI INC
               </h2>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="mb-3 text-sm text-muted-foreground">
                 Empowering creativity with artificial intelligence
               </p>
               <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
@@ -128,15 +180,19 @@ export default function Footer() {
             </Link>
           </div>
         </div>
-        
-        <div className="pt-8 border-t border-border/40">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+
+        <div className="border-t border-border/40 pt-8">
+          <div className="flex flex-col items-center justify-between gap-4 text-sm text-muted-foreground md:flex-row">
             <p>© 2024 VibeAI by Loukri AI INC. All rights reserved.</p>
             <div className="flex items-center gap-4">
-              <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
-              <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
+              <Link href="/privacy" className="transition-colors hover:text-primary">
+                Privacy
+              </Link>
+              <Link href="/terms" className="transition-colors hover:text-primary">
+                Terms
+              </Link>
               <span className="flex items-center gap-1">
-                Made with <Heart className="h-3 w-3 text-red-500 animate-pulse" /> by Loukri AI
+                Made with <Heart className="h-3 w-3 animate-pulse text-red-500" /> by Loukri AI
               </span>
             </div>
           </div>

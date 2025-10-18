@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Film, Video, BookOpen, ImageIcon, Sparkles, TrendingUp, Clock, Heart } from 'lucide-react';
 import { PostCategory } from '@/types/database';
 
@@ -35,8 +41,8 @@ export default function GalleryFilter({ onCategoryChange, onSortChange }: Galler
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 p-4 bg-card rounded-lg border">
-      <div className="flex flex-wrap gap-2 flex-1">
+    <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 sm:flex-row">
+      <div className="flex flex-1 flex-wrap gap-2">
         {categories.map((category) => {
           const Icon = category.icon;
           return (
@@ -53,7 +59,7 @@ export default function GalleryFilter({ onCategoryChange, onSortChange }: Galler
           );
         })}
       </div>
-      
+
       <Select value={selectedSort} onValueChange={handleSortChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Sort by" />

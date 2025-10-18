@@ -17,7 +17,7 @@ export default function SecureLikeButton({
   postId,
   initialLiked,
   initialCount,
-  userId
+  userId,
 }: SecureLikeButtonProps) {
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
@@ -43,7 +43,7 @@ export default function SecureLikeButton({
       mouseMovements.current++;
       actionLog.current.push({
         timestamp: Date.now(),
-        action: 'mouse_move'
+        action: 'mouse_move',
       });
 
       // Keep only last 50 actions
@@ -89,7 +89,7 @@ export default function SecureLikeButton({
     ctx.fillRect(125, 1, 62, 20);
     ctx.fillStyle = '#069';
     ctx.fillText('VibeAI 🎨', 2, 15);
-    
+
     return canvas.toDataURL();
   };
 
@@ -102,28 +102,30 @@ export default function SecureLikeButton({
     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
     if (!debugInfo) return '';
 
-    return gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) + 
-           gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+    return (
+      gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) +
+      gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+    );
   };
 
   // Proof of Work solver
   const solveProofOfWork = async (challenge: string, expectedPrefix: string): Promise<string> => {
     let nonce = 0;
     const encoder = new TextEncoder();
-    
+
     while (true) {
       const solution = nonce.toString();
       const data = encoder.encode(challenge + solution);
       const hashBuffer = await crypto.subtle.digest('SHA-256', data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      
+      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
       if (hashHex.startsWith(expectedPrefix)) {
         return solution;
       }
-      
+
       nonce++;
-      
+
       // Prevent infinite loop
       if (nonce > 1000000) {
         throw new Error('Proof of work too difficult');
@@ -147,7 +149,7 @@ export default function SecureLikeButton({
     // Log action
     actionLog.current.push({
       timestamp: Date.now(),
-      action: 'click_like'
+      action: 'click_like',
     });
 
     // Check if action is too fast (bot-like)
@@ -156,7 +158,7 @@ export default function SecureLikeButton({
       toast({
         title: 'Slow down!',
         description: 'Please wait a moment before voting',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -167,7 +169,7 @@ export default function SecureLikeButton({
       toast({
         title: 'Rate limited',
         description: `Please wait ${waitTime} seconds before voting again`,
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -185,7 +187,7 @@ export default function SecureLikeButton({
         fingerprint,
         honeypot: honeypotRef.current?.value || '',
         timestamp: Date.now(),
-        actionLog: actionLog.current.slice(-20) // Send last 20 actions
+        actionLog: actionLog.current.slice(-20), // Send last 20 actions
       };
 
       // Add CAPTCHA token if required
@@ -201,7 +203,7 @@ export default function SecureLikeButton({
         body.proofOfWork = {
           challenge,
           solution,
-          expectedPrefix: '0000'
+          expectedPrefix: '0000',
         };
       }
 
@@ -211,7 +213,7 @@ export default function SecureLikeButton({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
@@ -223,11 +225,7 @@ export default function SecureLikeButton({
           toast({
             title: 'Verification required',
             description: 'Please complete the CAPTCHA to continue',
-            action: (
-              <Button onClick={() => handleLike()}>
-                Verify
-              </Button>
-            )
+            action: <Button onClick={() => handleLike()}>Verify</Button>,
           });
           return;
         }
@@ -236,7 +234,7 @@ export default function SecureLikeButton({
           setRequiresProofOfWork(true);
           toast({
             title: 'Processing...',
-            description: 'Solving verification challenge'
+            description: 'Solving verification challenge',
           });
           // Retry with proof of work
           handleLike();
@@ -248,7 +246,7 @@ export default function SecureLikeButton({
 
       // Update state
       setLiked(data.liked);
-      setCount(prev => data.liked ? prev + 1 : Math.max(0, prev - 1));
+      setCount((prev) => (data.liked ? prev + 1 : Math.max(0, prev - 1)));
 
       // Update rate limit info
       if (data.rateLimit) {
@@ -257,15 +255,14 @@ export default function SecureLikeButton({
 
       toast({
         title: data.liked ? 'Liked!' : 'Unliked',
-        description: `${data.rateLimit?.remaining || 'Several'} votes remaining`
+        description: `${data.rateLimit?.remaining || 'Several'} votes remaining`,
       });
-
     } catch (error) {
       console.error('Vote error:', error);
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to vote',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -275,12 +272,7 @@ export default function SecureLikeButton({
   return (
     <>
       {/* Load hCaptcha if needed */}
-      {requiresCaptcha && (
-        <Script
-          src="https://js.hcaptcha.com/1/api.js"
-          strategy="lazyOnload"
-        />
-      )}
+      {requiresCaptcha && <Script src="https://js.hcaptcha.com/1/api.js" strategy="lazyOnload" />}
 
       {/* Hidden honeypot field (bots will fill this) */}
       <input
@@ -296,7 +288,7 @@ export default function SecureLikeButton({
         onClick={handleLike}
         variant={liked ? 'default' : 'outline'}
         disabled={loading}
-        className="gap-2 relative"
+        className="relative gap-2"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -304,18 +296,16 @@ export default function SecureLikeButton({
           <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
         )}
         {count}
-        
+
         {/* Show shield icon if extra verification is active */}
         {(requiresCaptcha || requiresProofOfWork) && (
-          <ShieldAlert className="h-3 w-3 absolute -top-1 -right-1 text-yellow-500" />
+          <ShieldAlert className="absolute -right-1 -top-1 h-3 w-3 text-yellow-500" />
         )}
       </Button>
 
       {/* Rate limit indicator */}
       {rateLimit && rateLimit.remaining < 5 && (
-        <p className="text-xs text-muted-foreground mt-1">
-          {rateLimit.remaining} votes remaining
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">{rateLimit.remaining} votes remaining</p>
       )}
     </>
   );

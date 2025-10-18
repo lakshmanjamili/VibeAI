@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       // Create default credits for new user
       const { data, error } = await (supabase as any)
         .from('user_ai_credits')
-        .insert({ 
+        .insert({
           user_id: userIdentifier,
           imagen_used: 0,
           imagen_limit: 10,
@@ -32,11 +32,11 @@ export async function GET(request: NextRequest) {
           nano_banana_used: 0,
           nano_banana_limit: 10,
           chat_messages_used: 0,
-          chat_messages_limit: 100
+          chat_messages_limit: 100,
         })
         .select()
         .single();
-      
+
       if (error) {
         console.error('Error creating credits:', error);
         // Return default values if creation fails
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
           nano_banana_limit: 10,
           chat_messages_used: 0,
           chat_messages_limit: 100,
-          reset_date: new Date().toISOString()
+          reset_date: new Date().toISOString(),
         };
       } else {
         credits = data;
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
         nano_banana_limit: 10,
         chat_messages_used: 0,
         chat_messages_limit: 100,
-        reset_date: new Date().toISOString()
+        reset_date: new Date().toISOString(),
       };
     }
 
@@ -106,43 +106,39 @@ export async function GET(request: NextRequest) {
         imagen: {
           used: credits.imagen_used || 0,
           limit: credits.imagen_limit || 10,
-          remaining: (credits.imagen_limit || 10) - (credits.imagen_used || 0)
+          remaining: (credits.imagen_limit || 10) - (credits.imagen_used || 0),
         },
         gemini: {
           used: credits.gemini_used || 0,
           limit: credits.gemini_limit || 50,
-          remaining: (credits.gemini_limit || 50) - (credits.gemini_used || 0)
+          remaining: (credits.gemini_limit || 50) - (credits.gemini_used || 0),
         },
         grok: {
           used: credits.grok_used || 0,
           limit: credits.grok_limit || 5,
-          remaining: (credits.grok_limit || 5) - (credits.grok_used || 0)
+          remaining: (credits.grok_limit || 5) - (credits.grok_used || 0),
         },
         veo: {
           used: credits.veo_used || 0,
           limit: credits.veo_limit || 2,
-          remaining: (credits.veo_limit || 2) - (credits.veo_used || 0)
+          remaining: (credits.veo_limit || 2) - (credits.veo_used || 0),
         },
         nano_banana: {
           used: credits.nano_banana_used || 0,
           limit: credits.nano_banana_limit || 10,
-          remaining: (credits.nano_banana_limit || 10) - (credits.nano_banana_used || 0)
+          remaining: (credits.nano_banana_limit || 10) - (credits.nano_banana_used || 0),
         },
         chat: {
           used: credits.chat_messages_used || 0,
           limit: credits.chat_messages_limit || 100,
-          remaining: (credits.chat_messages_limit || 100) - (credits.chat_messages_used || 0)
-        }
+          remaining: (credits.chat_messages_limit || 100) - (credits.chat_messages_used || 0),
+        },
       },
       subscription: subscription?.subscription_plans?.name || 'Free',
-      resetDate: credits?.reset_date || new Date().toISOString()
+      resetDate: credits?.reset_date || new Date().toISOString(),
     });
-
   } catch (error: any) {
     console.error('Credits error:', error);
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

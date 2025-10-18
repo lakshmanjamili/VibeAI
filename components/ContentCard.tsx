@@ -46,7 +46,7 @@ export default function ContentCard({ post, onLike, onDownload }: ContentCardPro
       transition={{ duration: 0.3 }}
       whileHover={{ y: -5 }}
     >
-      <Card className="overflow-hidden group hover:shadow-xl transition-all duration-300">
+      <Card className="group overflow-hidden transition-all duration-300 hover:shadow-xl">
         <Link href={`/post/${post.id}`}>
           <div className="relative aspect-square overflow-hidden bg-muted">
             {post.thumbnail_url || post.file_url ? (
@@ -54,35 +54,38 @@ export default function ContentCard({ post, onLike, onDownload }: ContentCardPro
                 src={post.thumbnail_url || post.file_url}
                 alt={post.title}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
-              <div className="flex items-center justify-center h-full">
+              <div className="flex h-full items-center justify-center">
                 <CategoryIcon className="h-16 w-16 text-muted-foreground" />
               </div>
             )}
-            
-            <div className="absolute top-2 right-2">
-              <Badge variant="secondary" className="backdrop-blur-sm bg-background/80">
-                <CategoryIcon className="h-3 w-3 mr-1" />
+
+            <div className="absolute right-2 top-2">
+              <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                <CategoryIcon className="mr-1 h-3 w-3" />
                 {post.category}
               </Badge>
             </div>
-            
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            
-            <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-              <p className="text-white font-semibold truncate">{post.title}</p>
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+            <div className="absolute bottom-0 left-0 right-0 translate-y-full p-4 transition-transform duration-300 group-hover:translate-y-0">
+              <p className="truncate font-semibold text-white">{post.title}</p>
               {post.description && (
-                <p className="text-white/80 text-sm truncate">{post.description}</p>
+                <p className="truncate text-sm text-white/80">{post.description}</p>
               )}
             </div>
           </div>
         </Link>
-        
+
         <div className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <Link href={`/user/${post.user_id}`} className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <div className="mb-2 flex items-center justify-between">
+            <Link
+              href={`/user/${post.user_id}`}
+              className="flex items-center space-x-2 transition-opacity hover:opacity-80"
+            >
               {post.avatar_url && (
                 <Image
                   src={post.avatar_url}
@@ -94,13 +97,13 @@ export default function ContentCard({ post, onLike, onDownload }: ContentCardPro
               )}
               <span className="text-sm font-medium">{post.username || 'Anonymous'}</span>
             </Link>
-            
+
             <div className="flex items-center space-x-1 text-sm text-muted-foreground">
               <Eye className="h-3 w-3" />
               <span>{post.view_count}</span>
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -111,13 +114,8 @@ export default function ContentCard({ post, onLike, onDownload }: ContentCardPro
               <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
               <span>{likesCount}</span>
             </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDownload}
-              className="gap-1"
-            >
+
+            <Button variant="ghost" size="sm" onClick={handleDownload} className="gap-1">
               <Download className="h-4 w-4" />
               <span>{post.download_count}</span>
             </Button>

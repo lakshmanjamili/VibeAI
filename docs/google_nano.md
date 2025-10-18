@@ -1,20 +1,17 @@
 Let us start slowly: the goal of our app is to have all people uploading their ai stuff think like instagram of ai stuff.
 
-
 For now anybody can upload with account.
 
-for people with account to start needs to know how to create these images 
+for people with account to start needs to know how to create these images
 
 so I was asked to start with nano banana.. people know how to use nana banana but if you see there are different ways to create thme with examples.
 
-my goal in the chatbot should cover all api features it has like temperateure, aspect,  top p, add stop sequence, output lenght, system instructions for special.
+my goal in the chatbot should cover all api features it has like temperateure, aspect, top p, add stop sequence, output lenght, system instructions for special.
 
 and if you look the api docuemnatioatn, we can provide example sectioons in the window so users knows how to get the right thing.. as disuccsed nano banana and imagine differenciateion
 
-
-
-
 code: # To run this code you need to install the following dependencies:
+
 # pip install google-genai
 
 import base64
@@ -23,18 +20,16 @@ import os
 from google import genai
 from google.genai import types
 
-
 def save_binary_file(file_name, data):
-    f = open(file_name, "wb")
-    f.write(data)
-    f.close()
-    print(f"File saved to to: {file_name}")
-
+f = open(file_name, "wb")
+f.write(data)
+f.close()
+print(f"File saved to to: {file_name}")
 
 def generate():
-    client = genai.Client(
-        api_key=os.environ.get("GEMINI_API_KEY"),
-    )
+client = genai.Client(
+api_key=os.environ.get("GEMINI_API_KEY"),
+)
 
     model = "gemini-2.5-flash-image"
     contents = [
@@ -74,17 +69,12 @@ def generate():
         else:
             print(chunk.text)
 
-if __name__ == "__main__":
-    generate()
-
-
-
+if **name** == "**main**":
+generate()
 
 detailed API for Nano banana with examples provided here:
 
-
 Image generation with Gemini (aka Nano Banana)
-
 
 Gemini can generate and process images conversationally. You can prompt Gemini with text, images, or a combination of both allowing you to create, edit, and iterate on visuals with unprecedented control:
 
@@ -111,20 +101,20 @@ from io import BytesIO
 client = genai.Client()
 
 prompt = (
-    "Create a picture of a nano banana dish in a fancy restaurant with a Gemini theme"
+"Create a picture of a nano banana dish in a fancy restaurant with a Gemini theme"
 )
 
 response = client.models.generate_content(
-    model="gemini-2.5-flash-image",
-    contents=[prompt],
+model="gemini-2.5-flash-image",
+contents=[prompt],
 )
 
 for part in response.candidates[0].content.parts:
-    if part.text is not None:
-        print(part.text)
-    elif part.inline_data is not None:
-        image = Image.open(BytesIO(part.inline_data.data))
-        image.save("generated_image.png")
+if part.text is not None:
+print(part.text)
+elif part.inline_data is not None:
+image = Image.open(BytesIO(part.inline_data.data))
+image.save("generated_image.png")
 AI-generated image of a nano banana dish
 AI-generated image of a nano banana dish in a Gemini-themed restaurant
 Image editing (text-and-image-to-image)
@@ -145,23 +135,23 @@ from io import BytesIO
 client = genai.Client()
 
 prompt = (
-    "Create a picture of my cat eating a nano-banana in a "
-    "fancy restaurant under the Gemini constellation",
+"Create a picture of my cat eating a nano-banana in a "
+"fancy restaurant under the Gemini constellation",
 )
 
 image = Image.open("/path/to/cat_image.png")
 
 response = client.models.generate_content(
-    model="gemini-2.5-flash-image",
-    contents=[prompt, image],
+model="gemini-2.5-flash-image",
+contents=[prompt, image],
 )
 
 for part in response.candidates[0].content.parts:
-    if part.text is not None:
-        print(part.text)
-    elif part.inline_data is not None:
-        image = Image.open(BytesIO(part.inline_data.data))
-        image.save("generated_image.png")
+if part.text is not None:
+print(part.text)
+elif part.inline_data is not None:
+image = Image.open(BytesIO(part.inline_data.data))
+image.save("generated_image.png")
 AI-generated image of a cat eating anano banana
 AI-generated image of a cat eating a nano banana
 Other image generation modes
@@ -182,7 +172,7 @@ Prompts for generating images
 The following strategies will help you create effective prompts to generate exactly the images you're looking for.
 
 1. Photorealistic scenes
-For realistic images, use photography terms. Mention camera angles, lens types, lighting, and fine details to guide the model toward a photorealistic result.
+   For realistic images, use photography terms. Mention camera angles, lens types, lighting, and fine details to guide the model toward a photorealistic result.
 
 Template
 Prompt
@@ -196,11 +186,8 @@ A photorealistic [shot type] of [subject], [action or expression], set in
 a [mood] atmosphere. Captured with a [camera/lens details], emphasizing
 [key textures and details]. The image should be in a [aspect ratio] format.
 
-
-
-
 2. Stylized illustrations & stickers
-To create stickers, icons, or assets, be explicit about the style and request a transparent background.
+   To create stickers, icons, or assets, be explicit about the style and request a transparent background.
 
 Template
 Prompt
@@ -213,8 +200,7 @@ A [style] sticker of a [subject], featuring [key characteristics] and a
 [color palette]. The design should have [line style] and [shading style].
 The background must be transparent.
 A kawaii-style sticker of a happy red...
-A kawaii-style sticker of a happy red panda...
-3. Accurate text in images
+A kawaii-style sticker of a happy red panda... 3. Accurate text in images
 Gemini excels at rendering text. Be clear about the text, the font style (descriptively), and the overall design.
 
 Template
@@ -228,8 +214,7 @@ Create a [image type] for [brand/concept] with the text "[text to render]"
 in a [font style]. The design should be [style description], with a
 [color scheme].
 Create a modern, minimalist logo for a coffee shop called 'The Daily Grind'...
-Create a modern, minimalist logo for a coffee shop called 'The Daily Grind'...
-4. Product mockups & commercial photography
+Create a modern, minimalist logo for a coffee shop called 'The Daily Grind'... 4. Product mockups & commercial photography
 Perfect for creating clean, professional product shots for e-commerce, advertising, or branding.
 
 Template
@@ -245,8 +230,7 @@ e.g., three-point softbox setup] to [lighting purpose]. The camera angle is
 a [angle type] to showcase [specific feature]. Ultra-realistic, with sharp
 focus on [key detail]. [Aspect ratio].
 A high-resolution, studio-lit product photograph of a minimalist ceramic coffee mug...
-A high-resolution, studio-lit product photograph of a minimalist ceramic coffee mug...
-5. Minimalist & negative space design
+A high-resolution, studio-lit product photograph of a minimalist ceramic coffee mug... 5. Minimalist & negative space design
 Excellent for creating backgrounds for websites, presentations, or marketing materials where text will be overlaid.
 
 Template
@@ -261,8 +245,7 @@ A minimalist composition featuring a single [subject] positioned in the
 [color] canvas, creating significant negative space. Soft, subtle lighting.
 [Aspect ratio].
 A minimalist composition featuring a single, delicate red maple leaf...
-A minimalist composition featuring a single, delicate red maple leaf...
-6. Sequential art (Comic panel / Storyboard)
+A minimalist composition featuring a single, delicate red maple leaf... 6. Sequential art (Comic panel / Storyboard)
 Builds on character consistency and scene description to create panels for visual storytelling.
 
 Template
@@ -282,7 +265,7 @@ Prompts for editing images
 These examples show how to provide images alongside your text prompts for editing, composition, and style transfer.
 
 1. Adding and removing elements
-Provide an image and describe your change. The model will match the original image's style, lighting, and perspective.
+   Provide an image and describe your change. The model will match the original image's style, lighting, and perspective.
 
 Template
 Prompt
@@ -301,8 +284,7 @@ Output
 A photorealistic picture of a fluffy ginger cat..
 A photorealistic picture of a fluffy ginger cat...
 Using the provided image of my cat, please add a small, knitted wizard hat...
-Using the provided image of my cat, please add a small, knitted wizard hat...
-2. Inpainting (Semantic masking)
+Using the provided image of my cat, please add a small, knitted wizard hat... 2. Inpainting (Semantic masking)
 Conversationally define a "mask" to edit a specific part of an image while leaving the rest untouched.
 
 Template
@@ -322,8 +304,7 @@ Output
 A wide shot of a modern, well-lit living room...
 A wide shot of a modern, well-lit living room...
 Using the provided image of a living room, change only the blue sofa to be a vintage, brown leather chesterfield sofa...
-Using the provided image of a living room, change only the blue sofa to be a vintage, brown leather chesterfield sofa...
-3. Style transfer
+Using the provided image of a living room, change only the blue sofa to be a vintage, brown leather chesterfield sofa... 3. Style transfer
 Provide an image and ask the model to recreate its content in a different artistic style.
 
 Template
@@ -341,8 +322,7 @@ Output
 A photorealistic, high-resolution photograph of a busy city street...
 A photorealistic, high-resolution photograph of a busy city street...
 Transform the provided photograph of a modern city street at night...
-Transform the provided photograph of a modern city street at night...
-4. Advanced composition: Combining multiple images
+Transform the provided photograph of a modern city street at night... 4. Advanced composition: Combining multiple images
 Provide multiple images as context to create a new, composite scene. This is perfect for product mockups or creative collages.
 
 Template
@@ -366,8 +346,7 @@ A professionally shot photo of a blue floral summer dress...
 Full-body shot of a woman with her hair in a bun...
 Full-body shot of a woman with her hair in a bun...
 Create a professional e-commerce fashion photo...
-Create a professional e-commerce fashion photo...
-5. High-fidelity detail preservation
+Create a professional e-commerce fashion photo... 5. High-fidelity detail preservation
 To ensure critical details (like a face or logo) are preserved during an edit, describe them in great detail along with your edit request.
 
 Template
@@ -422,11 +401,11 @@ Go
 REST
 
 response = client.models.generate_content(
-    model="gemini-2.5-flash-image",
-    contents=[prompt],
-    config=types.GenerateContentConfig(
-        response_modalities=['Image']
-    )
+model="gemini-2.5-flash-image",
+contents=[prompt],
+config=types.GenerateContentConfig(
+response_modalities=['Image']
+)
 )
 Aspect ratios
 The model defaults to matching the output image size to that of your input image, or otherwise generates 1:1 squares. You can control the aspect ratio of the output image using the aspect_ratio field under image_config in the response request, shown here:
@@ -437,37 +416,37 @@ Go
 REST
 
 response = client.models.generate_content(
-    model="gemini-2.5-flash-image",
-    contents=[prompt],
-    config=types.GenerateContentConfig(
-        image_config=types.ImageConfig(
-            aspect_ratio="16:9",
-        )
-    )
+model="gemini-2.5-flash-image",
+contents=[prompt],
+config=types.GenerateContentConfig(
+image_config=types.ImageConfig(
+aspect_ratio="16:9",
+)
+)
 )
 The different ratios available and the size of the image generated are listed in this table:
 
-Aspect ratio	Resolution	Tokens
-1:1	1024x1024	1290
-2:3	832x1248	1290
-3:2	1248x832	1290
-3:4	864x1184	1290
-4:3	1184x864	1290
-4:5	896x1152	1290
-5:4	1152x896	1290
-9:16	768x1344	1290
-16:9	1344x768	1290
-21:9	1536x672	1290
+Aspect ratio Resolution Tokens
+1:1 1024x1024 1290
+2:3 832x1248 1290
+3:2 1248x832 1290
+3:4 864x1184 1290
+4:3 1184x864 1290
+4:5 896x1152 1290
+5:4 1152x896 1290
+9:16 768x1344 1290
+16:9 1344x768 1290
+21:9 1536x672 1290
 When to use Imagen
 In addition to using Gemini's built-in image generation capabilities, you can also access Imagen, our specialized image generation model, through the Gemini API.
 
-Attribute	Imagen	Gemini Native Image
-Strengths	Most capable image generation model to date. Recommended for photorealistic images, sharper clarity, improved spelling and typography.	Default recommendation.
+Attribute Imagen Gemini Native Image
+Strengths Most capable image generation model to date. Recommended for photorealistic images, sharper clarity, improved spelling and typography. Default recommendation.
 Unparalleled flexibility, contextual understanding, and simple, mask-free editing. Uniquely capable of multi-turn conversational editing.
-Availability	Generally available	Preview (Production usage allowed)
-Latency	Low. Optimized for near-real-time performance.	Higher. More computation is required for its advanced capabilities.
-Cost	Cost-effective for specialized tasks. $0.02/image to $0.12/image	Token-based pricing. $30 per 1 million tokens for image output (image output tokenized at 1290 tokens per image flat, up to 1024x1024px)
-Recommended tasks	
+Availability Generally available Preview (Production usage allowed)
+Latency Low. Optimized for near-real-time performance. Higher. More computation is required for its advanced capabilities.
+Cost Cost-effective for specialized tasks. $0.02/image to $0.12/image Token-based pricing. $30 per 1 million tokens for image output (image output tokenized at 1290 tokens per image flat, up to 1024x1024px)
+Recommended tasks
 Image quality, photorealism, artistic detail, or specific styles (e.g., impressionism, anime) are top priorities.
 Infusing branding, style, or generating logos and product designs.
 Generating advanced spelling or typography.
@@ -476,4 +455,3 @@ Combine creative elements from multiple images with a single prompt.
 Make highly specific edits to images, modify individual elements with simple language commands, and iteratively work on an image.
 Apply a specific design or texture from one image to another while preserving the original subject's form and details.
 Imagen 4 should be your go-to model starting to generate images with Imagen. Choose Imagen 4 Ultra for advanced use-cases or when you need the best image quality (note that can only generate one image at a time).
-

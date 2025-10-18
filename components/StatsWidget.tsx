@@ -38,11 +38,10 @@ export default function StatsWidget() {
         .select('*', { count: 'exact', head: true });
 
       // Fetch total downloads (sum of all download_count)
-      const { data: downloadData } = await supabase
-        .from('posts')
-        .select('download_count');
-      
-      const totalDownloads = downloadData?.reduce((sum: number, post: any) => sum + (post.download_count || 0), 0) || 0;
+      const { data: downloadData } = await supabase.from('posts').select('download_count');
+
+      const totalDownloads =
+        downloadData?.reduce((sum: number, post: any) => sum + (post.download_count || 0), 0) || 0;
 
       // Fetch today's posts
       const today = new Date();
@@ -98,7 +97,7 @@ export default function StatsWidget() {
       bgColor: 'bg-purple-500/10',
     },
     {
-      label: 'Today\'s Posts',
+      label: "Today's Posts",
       value: stats.todayPosts.toLocaleString(),
       icon: Sparkles,
       color: 'text-yellow-500',
@@ -114,7 +113,7 @@ export default function StatsWidget() {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
       {statCards.map((stat, index) => (
         <motion.div
           key={stat.label}
@@ -122,9 +121,9 @@ export default function StatsWidget() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: index * 0.05 }}
         >
-          <Card className="hover:shadow-lg transition-all hover:scale-105">
+          <Card className="transition-all hover:scale-105 hover:shadow-lg">
             <CardContent className="p-4">
-              <div className={`rounded-lg p-2 w-fit mb-3 ${stat.bgColor}`}>
+              <div className={`mb-3 w-fit rounded-lg p-2 ${stat.bgColor}`}>
                 <stat.icon className={`h-5 w-5 ${stat.color}`} />
               </div>
               <p className="text-2xl font-bold">{stat.value}</p>

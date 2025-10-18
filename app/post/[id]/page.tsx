@@ -17,12 +17,12 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { PostWithMetrics } from '@/types/database';
-import { 
-  Heart, 
-  Download, 
-  Eye, 
-  Share2, 
-  Copy, 
+import {
+  Heart,
+  Download,
+  Eye,
+  Share2,
+  Copy,
   Sparkles,
   Hash,
   Calendar,
@@ -32,7 +32,7 @@ import {
   ImageIcon,
   Wand2,
   MessageCircle,
-  ChevronLeft
+  ChevronLeft,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -76,7 +76,7 @@ export default function PostDetailPage() {
       if (error) throw error;
 
       setPost(data);
-      
+
       // Fetch related posts from the same user
       if ((data as any)?.user_id) {
         fetchRelatedPosts((data as any).user_id, postId);
@@ -124,7 +124,7 @@ export default function PostDetailPage() {
 
   const handleDownload = async () => {
     if (!post) return;
-    
+
     try {
       // Update download count
       await (supabase as any)
@@ -134,12 +134,14 @@ export default function PostDetailPage() {
 
       // Extract filename from URL or use title
       const urlParts = post.file_url.split('/');
-      const fileName = urlParts[urlParts.length - 1] || `${post.title.replace(/[^a-zA-Z0-9]/g, '_')}.${post.category === 'photo' ? 'jpg' : post.category === 'gif' ? 'gif' : post.category === 'video' ? 'mp4' : 'pdf'}`;
-      
+      const fileName =
+        urlParts[urlParts.length - 1] ||
+        `${post.title.replace(/[^a-zA-Z0-9]/g, '_')}.${post.category === 'photo' ? 'jpg' : post.category === 'gif' ? 'gif' : post.category === 'video' ? 'mp4' : 'pdf'}`;
+
       // Fetch the file and download it
       const response = await fetch(post.file_url);
       const blob = await response.blob();
-      
+
       // Create download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -147,14 +149,16 @@ export default function PostDetailPage() {
       link.download = fileName;
       document.body.appendChild(link);
       link.click();
-      
+
       // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       // Update local state
-      setPost(prev => prev ? { ...prev, download_count: (prev.download_count || 0) + 1 } : null);
-      
+      setPost((prev) =>
+        prev ? { ...prev, download_count: (prev.download_count || 0) + 1 } : null
+      );
+
       toast({
         title: 'Download started',
         description: `Downloading ${fileName}`,
@@ -171,7 +175,7 @@ export default function PostDetailPage() {
 
   const handleShare = () => {
     if (!post) return;
-    
+
     const url = `${window.location.origin}/post/${post.id}`;
     navigator.clipboard.writeText(url);
     toast({
@@ -182,7 +186,7 @@ export default function PostDetailPage() {
 
   const handleCopyPrompt = () => {
     if (!post?.prompt) return;
-    
+
     navigator.clipboard.writeText(post.prompt);
     toast({
       title: 'Prompt copied!',
@@ -205,7 +209,7 @@ export default function PostDetailPage() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
         </div>
         <Footer />
       </div>
@@ -217,10 +221,8 @@ export default function PostDetailPage() {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto px-4 py-20 text-center">
-          <h1 className="text-2xl font-bold mb-4">Post not found</h1>
-          <Button onClick={() => router.push('/gallery')}>
-            Back to Gallery
-          </Button>
+          <h1 className="mb-4 text-2xl font-bold">Post not found</h1>
+          <Button onClick={() => router.push('/gallery')}>Back to Gallery</Button>
         </div>
         <Footer />
       </div>
@@ -232,19 +234,15 @@ export default function PostDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-20 pb-12">
-        <Button
-          variant="ghost"
-          onClick={() => router.back()}
-          className="mb-6 gap-2"
-        >
+      <main className="container mx-auto px-4 pb-12 pt-20">
+        <Button variant="ghost" onClick={() => router.back()} className="mb-6 gap-2">
           <ChevronLeft className="h-4 w-4" />
           Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             {/* Media Display */}
             <Card className="overflow-hidden">
               <div className="relative aspect-video bg-muted">
@@ -254,7 +252,7 @@ export default function PostDetailPage() {
                     alt={post.title}
                     category={post.category}
                     thumbnail={post.thumbnail_url || undefined}
-                    className="w-full h-full"
+                    className="h-full w-full"
                   />
                 )}
               </div>
@@ -262,16 +260,13 @@ export default function PostDetailPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3">
-              <LikeButton 
-                postId={post.id}
-                initialLikeCount={post.total_likes_count || 0}
-              />
-              
+              <LikeButton postId={post.id} initialLikeCount={post.total_likes_count || 0} />
+
               <Button onClick={handleDownload} variant="outline" className="gap-2">
                 <Download className="h-4 w-4" />
                 Download ({post.download_count || 0})
               </Button>
-              
+
               <Button onClick={handleShare} variant="outline" className="gap-2">
                 <Share2 className="h-4 w-4" />
                 Share
@@ -290,16 +285,16 @@ export default function PostDetailPage() {
                 <CardContent className="space-y-4">
                   {post.ai_model && (
                     <div>
-                      <p className="text-sm text-muted-foreground mb-2">Model Used</p>
+                      <p className="mb-2 text-sm text-muted-foreground">Model Used</p>
                       <Badge variant="secondary" className="text-sm">
                         {post.ai_model}
                       </Badge>
                     </div>
                   )}
-                  
+
                   {post.prompt && (
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="mb-2 flex items-center justify-between">
                         <p className="text-sm text-muted-foreground">Prompt</p>
                         <Button
                           variant="ghost"
@@ -312,7 +307,9 @@ export default function PostDetailPage() {
                         </Button>
                       </div>
                       <div className="relative">
-                        <p className={`text-sm bg-muted p-3 rounded-lg ${!showPrompt && post.prompt.length > 200 ? 'line-clamp-3' : ''}`}>
+                        <p
+                          className={`rounded-lg bg-muted p-3 text-sm ${!showPrompt && post.prompt.length > 200 ? 'line-clamp-3' : ''}`}
+                        >
                           {post.prompt}
                         </p>
                         {post.prompt.length > 200 && (
@@ -337,9 +334,7 @@ export default function PostDetailPage() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <MessageCircle className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-semibold">
-                    Comments ({post.comments_count || 0})
-                  </h3>
+                  <h3 className="text-lg font-semibold">Comments ({post.comments_count || 0})</h3>
                 </div>
               </CardHeader>
               <CardContent>
@@ -355,7 +350,7 @@ export default function PostDetailPage() {
               <CardHeader>
                 <h2 className="text-2xl font-bold">{post.title}</h2>
                 {post.description && (
-                  <p className="text-muted-foreground mt-2">{post.description}</p>
+                  <p className="mt-2 text-muted-foreground">{post.description}</p>
                 )}
               </CardHeader>
               <CardContent className="space-y-4">
@@ -384,7 +379,7 @@ export default function PostDetailPage() {
                     </div>
                     <span className="font-semibold">{post.view_count || 0}</span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <CategoryIcon className="h-4 w-4" />
@@ -392,7 +387,7 @@ export default function PostDetailPage() {
                     </div>
                     <Badge>{post.category}</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Calendar className="h-4 w-4" />
@@ -409,7 +404,7 @@ export default function PostDetailPage() {
                   <>
                     <Separator />
                     <div>
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="mb-3 flex items-center gap-2">
                         <Hash className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm text-muted-foreground">Tags</span>
                       </div>
@@ -432,30 +427,30 @@ export default function PostDetailPage() {
             {relatedPosts.length > 0 && (
               <Card>
                 <CardHeader>
-                  <h3 className="text-lg font-semibold">More from {post.username || 'this creator'}</h3>
+                  <h3 className="text-lg font-semibold">
+                    More from {post.username || 'this creator'}
+                  </h3>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {relatedPosts.map((relatedPost) => (
-                      <Link 
-                        key={relatedPost.id} 
-                        href={`/post/${relatedPost.id}`}
-                        className="block"
-                      >
-                        <div className="flex gap-3 p-2 rounded-lg hover:bg-muted transition-colors">
+                      <Link key={relatedPost.id} href={`/post/${relatedPost.id}`} className="block">
+                        <div className="flex gap-3 rounded-lg p-2 transition-colors hover:bg-muted">
                           {/* Thumbnail */}
-                          <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                            {relatedPost.thumbnail_url || (relatedPost.category === 'photo' || relatedPost.category === 'gif') ? (
+                          <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md bg-muted">
+                            {relatedPost.thumbnail_url ||
+                            relatedPost.category === 'photo' ||
+                            relatedPost.category === 'gif' ? (
                               <img
                                 src={relatedPost.thumbnail_url || relatedPost.file_url}
                                 alt={relatedPost.title}
-                                className="w-full h-full object-cover"
+                                className="h-full w-full object-cover"
                               />
                             ) : relatedPost.category === 'video' && relatedPost.file_url ? (
-                              <div className="relative w-full h-full">
+                              <div className="relative h-full w-full">
                                 <video
                                   src={relatedPost.file_url}
-                                  className="w-full h-full object-cover"
+                                  className="h-full w-full object-cover"
                                   muted
                                   playsInline
                                   preload="metadata"
@@ -465,21 +460,25 @@ export default function PostDetailPage() {
                                 </div>
                               </div>
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                {React.createElement(getCategoryIcon(relatedPost.category), { className: 'h-6 w-6 text-muted-foreground' })}
+                              <div className="flex h-full w-full items-center justify-center">
+                                {React.createElement(getCategoryIcon(relatedPost.category), {
+                                  className: 'h-6 w-6 text-muted-foreground',
+                                })}
                               </div>
                             )}
                           </div>
-                          
+
                           {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm line-clamp-1 hover:text-primary transition-colors">
+                          <div className="min-w-0 flex-1">
+                            <h4 className="line-clamp-1 text-sm font-medium transition-colors hover:text-primary">
                               {relatedPost.title}
                             </h4>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {formatDistanceToNow(new Date(relatedPost.created_at), { addSuffix: true })}
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(relatedPost.created_at), {
+                                addSuffix: true,
+                              })}
                             </p>
-                            <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                            <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Heart className="h-3 w-3" />
                                 {relatedPost.total_likes_count || 0}
@@ -494,12 +493,12 @@ export default function PostDetailPage() {
                       </Link>
                     ))}
                   </div>
-                  
+
                   {/* View All Link */}
-                  <div className="mt-4 pt-4 border-t">
-                    <Link 
+                  <div className="mt-4 border-t pt-4">
+                    <Link
                       href={`/gallery?user=${post.username}`}
-                      className="text-sm text-primary hover:underline flex items-center gap-1"
+                      className="flex items-center gap-1 text-sm text-primary hover:underline"
                     >
                       View all posts from {post.username}
                       <ChevronLeft className="h-3 w-3 rotate-180" />

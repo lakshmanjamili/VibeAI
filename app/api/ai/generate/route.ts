@@ -7,27 +7,24 @@ export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
     const sessionId = request.headers.get('x-session-id');
-    
+
     // Allow both authenticated and anonymous users
     const userIdentifier = userId || sessionId || 'anonymous';
-    
+
     const body = await request.json();
     const { model, prompt, options } = body;
 
     if (!model || !prompt) {
-      return NextResponse.json(
-        { error: 'Model and prompt are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Model and prompt are required' }, { status: 400 });
     }
 
     // Map model to credit field name
     const modelCreditMap: Record<string, string> = {
-      'nano_banana': 'nano_banana',
-      'imagen': 'imagen',
-      'grok': 'grok',
-      'veo': 'veo',
-      'gemini_chat': 'gemini'
+      nano_banana: 'nano_banana',
+      imagen: 'imagen',
+      grok: 'grok',
+      veo: 'veo',
+      gemini_chat: 'gemini',
     };
 
     const creditField = modelCreditMap[model] || model;
@@ -56,7 +53,7 @@ export async function POST(request: NextRequest) {
           nano_banana_used: 0,
           nano_banana_limit: 10,
           chat_messages_used: 0,
-          chat_messages_limit: 100
+          chat_messages_limit: 100,
         })
         .select()
         .single();
@@ -84,7 +81,7 @@ export async function POST(request: NextRequest) {
       model: model as AIModel,
       prompt,
       userId: userIdentifier,
-      options
+      options,
     });
     const generationTime = Date.now() - startTime;
 
@@ -113,18 +110,14 @@ export async function POST(request: NextRequest) {
       generationId: generationId,
       data: {
         ...result.data,
-        urls: savedUrls
+        urls: savedUrls,
       },
       creditsUsed: result.creditsUsed,
-      error: result.error
+      error: result.error,
     });
-
   } catch (error: any) {
     console.error('AI Generation error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Generation failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Generation failed' }, { status: 500 });
   }
 }
 
@@ -146,9 +139,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ generations: data });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

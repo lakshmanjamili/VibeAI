@@ -5,23 +5,30 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { motion } from 'framer-motion';
-import { 
-  Check, 
-  X, 
-  Crown, 
-  Rocket, 
-  Sparkles, 
+import {
+  Check,
+  X,
+  Crown,
+  Rocket,
+  Sparkles,
   CreditCard,
   Zap,
   Star,
   Gift,
   TrendingUp,
-  Infinity
+  Infinity,
 } from 'lucide-react';
 
 interface Plan {
@@ -55,7 +62,7 @@ const PLANS: Plan[] = [
       'Basic generation quality',
       'Community support',
       'Upload to gallery',
-      'Like and comment'
+      'Like and comment',
     ],
     limits: {
       imagen: 10,
@@ -63,9 +70,9 @@ const PLANS: Plan[] = [
       grok: 10,
       veo: 2,
       nano_banana: 20,
-      chat_messages: 100
+      chat_messages: 100,
     },
-    color: 'from-gray-400 to-gray-600'
+    color: 'from-gray-400 to-gray-600',
   },
   {
     id: 'pro',
@@ -80,7 +87,7 @@ const PLANS: Plan[] = [
       'Priority processing',
       'Advanced model settings',
       'Download in multiple formats',
-      'Priority support'
+      'Priority support',
     ],
     limits: {
       imagen: 1000,
@@ -88,10 +95,10 @@ const PLANS: Plan[] = [
       grok: 1000,
       veo: 100,
       nano_banana: 2000,
-      chat_messages: 10000
+      chat_messages: 10000,
     },
     popular: true,
-    color: 'from-purple-400 to-pink-600'
+    color: 'from-purple-400 to-pink-600',
   },
   {
     id: 'enterprise',
@@ -107,7 +114,7 @@ const PLANS: Plan[] = [
       'Team collaboration',
       'Analytics dashboard',
       'Dedicated support',
-      'Custom integrations'
+      'Custom integrations',
     ],
     limits: {
       imagen: -1,
@@ -115,10 +122,10 @@ const PLANS: Plan[] = [
       grok: -1,
       veo: -1,
       nano_banana: -1,
-      chat_messages: -1
+      chat_messages: -1,
     },
-    color: 'from-amber-400 to-orange-600'
-  }
+    color: 'from-amber-400 to-orange-600',
+  },
 ];
 
 export default function SubscriptionPage() {
@@ -152,7 +159,7 @@ export default function SubscriptionPage() {
       toast({
         title: 'Error',
         description: 'Failed to process subscription',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -160,35 +167,35 @@ export default function SubscriptionPage() {
   };
 
   const getLimitDisplay = (limit: number) => {
-    if (limit === -1) return <Infinity className="h-4 w-4 inline" />;
+    if (limit === -1) return <Infinity className="inline h-4 w-4" />;
     return limit.toLocaleString();
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
-      <main className="container mx-auto px-4 pt-20 pb-12">
+
+      <main className="container mx-auto px-4 pb-12 pt-20">
         {/* Header */}
-        <motion.div 
-          className="text-center mb-12"
+        <motion.div
+          className="mb-12 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 mb-4">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
             <Crown className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">Subscription Plans</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
             Choose Your <span className="text-gradient-supreme">AI Power</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Unlock unlimited creativity with our AI generation tools. Start free, upgrade anytime.
           </p>
         </motion.div>
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-3">
           {PLANS.map((plan, index) => (
             <motion.div
               key={plan.id}
@@ -197,17 +204,15 @@ export default function SubscriptionPage() {
               transition={{ delay: index * 0.1 }}
               className={selectedPlan === plan.id ? 'scale-105' : ''}
             >
-              <Card 
-                className={`relative overflow-hidden h-full ${
+              <Card
+                className={`relative h-full overflow-hidden ${
                   plan.popular ? 'border-primary shadow-xl' : ''
                 }`}
                 onClick={() => setSelectedPlan(plan.id)}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0">
-                    <Badge className="rounded-bl-lg rounded-tr-lg bg-primary">
-                      MOST POPULAR
-                    </Badge>
+                  <div className="absolute right-0 top-0">
+                    <Badge className="rounded-bl-lg rounded-tr-lg bg-primary">MOST POPULAR</Badge>
                   </div>
                 )}
 
@@ -218,9 +223,7 @@ export default function SubscriptionPage() {
                   <CardTitle className="text-2xl">{plan.name}</CardTitle>
                   <CardDescription>{plan.description}</CardDescription>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">
-                      ${plan.price}
-                    </span>
+                    <span className="text-4xl font-bold">${plan.price}</span>
                     {plan.interval !== 'forever' && (
                       <span className="text-muted-foreground">/{plan.interval}</span>
                     )}
@@ -232,15 +235,15 @@ export default function SubscriptionPage() {
                   <div className="space-y-2">
                     {plan.features.map((feature) => (
                       <div key={feature} className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-green-500 mt-0.5" />
+                        <Check className="mt-0.5 h-4 w-4 text-green-500" />
                         <span className="text-sm">{feature}</span>
                       </div>
                     ))}
                   </div>
 
                   {/* Limits */}
-                  <div className="pt-4 border-t space-y-2">
-                    <h4 className="font-semibold text-sm mb-2">Monthly Limits</h4>
+                  <div className="space-y-2 border-t pt-4">
+                    <h4 className="mb-2 text-sm font-semibold">Monthly Limits</h4>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="flex justify-between">
                         <span>Imagen:</span>
@@ -260,19 +263,23 @@ export default function SubscriptionPage() {
                       </div>
                       <div className="flex justify-between">
                         <span>Nano:</span>
-                        <span className="font-semibold">{getLimitDisplay(plan.limits.nano_banana)}</span>
+                        <span className="font-semibold">
+                          {getLimitDisplay(plan.limits.nano_banana)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Chat:</span>
-                        <span className="font-semibold">{getLimitDisplay(plan.limits.chat_messages)}</span>
+                        <span className="font-semibold">
+                          {getLimitDisplay(plan.limits.chat_messages)}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </CardContent>
 
                 <CardFooter>
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant={plan.popular ? 'default' : 'outline'}
                     onClick={() => handleSubscribe(plan.id)}
                     disabled={isLoading}
@@ -295,19 +302,21 @@ export default function SubscriptionPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h4 className="font-semibold mb-2">Can I change plans anytime?</h4>
+              <h4 className="mb-2 font-semibold">Can I change plans anytime?</h4>
               <p className="text-sm text-muted-foreground">
-                Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately.
+                Yes! You can upgrade or downgrade your plan at any time. Changes take effect
+                immediately.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-2">What happens when I reach my limits?</h4>
+              <h4 className="mb-2 font-semibold">What happens when I reach my limits?</h4>
               <p className="text-sm text-muted-foreground">
-                You'll need to wait for the monthly reset or upgrade your plan to continue generating content.
+                You'll need to wait for the monthly reset or upgrade your plan to continue
+                generating content.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-2">Do unused credits roll over?</h4>
+              <h4 className="mb-2 font-semibold">Do unused credits roll over?</h4>
               <p className="text-sm text-muted-foreground">
                 No, credits reset monthly. Make sure to use them before your billing cycle ends!
               </p>

@@ -19,57 +19,57 @@ export const WAN_AI_CAPABILITIES: WanAICapability[] = [
     name: 'Wan Text to Image',
     description: 'Generate images from text descriptions',
     type: 'image',
-    creditCost: 2
+    creditCost: 2,
   },
   {
     id: 'wan_image_to_image',
     name: 'Wan Image Transform',
     description: 'Transform images with AI (style transfer, cartoonify, etc.)',
     type: 'image',
-    creditCost: 2
+    creditCost: 2,
   },
   {
     id: 'wan_text_to_video',
     name: 'Wan Text to Video',
     description: 'Create videos from text prompts',
     type: 'video',
-    creditCost: 5
+    creditCost: 5,
   },
   {
     id: 'wan_image_to_video',
     name: 'Wan Image to Video',
     description: 'Animate static images into videos',
     type: 'video',
-    creditCost: 4
+    creditCost: 4,
   },
   {
     id: 'wan_photo_to_drawing',
     name: 'Photo to Drawing',
     description: 'Convert photos to artistic drawings',
     type: 'edit',
-    creditCost: 1
+    creditCost: 1,
   },
   {
     id: 'wan_cartoon_avatar',
     name: 'Cartoon Avatar',
     description: 'Create cartoon avatars from photos',
     type: 'edit',
-    creditCost: 1
+    creditCost: 1,
   },
   {
     id: 'wan_virtual_model',
     name: 'Virtual Model',
     description: 'Generate virtual model images',
     type: 'image',
-    creditCost: 3
+    creditCost: 3,
   },
   {
     id: 'wan_video_super_res',
     name: 'Video Super Resolution',
     description: 'Enhance video quality with AI',
     type: 'video',
-    creditCost: 3
-  }
+    creditCost: 3,
+  },
 ];
 
 // Wan AI Text to Image
@@ -91,13 +91,13 @@ export async function generateWithWanTextToImage(
         width: options?.width || 1024,
         height: options?.height || 1024,
         num_images: options?.numberOfImages || 1,
-        style: options?.style || 'default'
+        style: options?.style || 'default',
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.WAN_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${process.env.WAN_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
       }
     );
 
@@ -106,10 +106,10 @@ export async function generateWithWanTextToImage(
         success: true,
         data: {
           urls: response.data.images.map((img: any) => img.url),
-          url: response.data.images[0].url
+          url: response.data.images[0].url,
         },
         model: 'wan_text_to_image',
-        creditsUsed: response.data.images.length * 2
+        creditsUsed: response.data.images.length * 2,
       };
     }
 
@@ -119,7 +119,7 @@ export async function generateWithWanTextToImage(
       success: false,
       error: error.message || 'Wan AI generation failed',
       model: 'wan_text_to_image',
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
@@ -142,13 +142,13 @@ export async function generateWithWanTextToVideo(
         duration: options?.duration || 5,
         fps: options?.fps || 24,
         resolution: options?.resolution || '1080p',
-        style: options?.style || 'realistic'
+        style: options?.style || 'realistic',
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.WAN_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${process.env.WAN_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
       }
     );
 
@@ -158,30 +158,27 @@ export async function generateWithWanTextToVideo(
     const maxAttempts = 60; // 10 minutes max
 
     while (attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
-      
-      const statusResponse = await axios.get(
-        `https://api.wan.video/v1/tasks/${taskId}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${process.env.WAN_API_KEY}`
-          }
-        }
-      );
+      await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait 10 seconds
+
+      const statusResponse = await axios.get(`https://api.wan.video/v1/tasks/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.WAN_API_KEY}`,
+        },
+      });
 
       if (statusResponse.data.status === 'completed') {
         return {
           success: true,
           data: {
-            url: statusResponse.data.video_url
+            url: statusResponse.data.video_url,
           },
           model: 'wan_text_to_video',
-          creditsUsed: 5
+          creditsUsed: 5,
         };
       } else if (statusResponse.data.status === 'failed') {
         throw new Error('Video generation failed');
       }
-      
+
       attempts++;
     }
 
@@ -191,7 +188,7 @@ export async function generateWithWanTextToVideo(
       success: false,
       error: error.message || 'Wan AI video generation failed',
       model: 'wan_text_to_video',
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
@@ -213,13 +210,13 @@ export async function generateWithWanImageToVideo(
         image_url: imageUrl,
         motion_prompt: prompt || 'animate this image naturally',
         duration: options?.duration || 4,
-        motion_intensity: options?.motionIntensity || 'medium'
+        motion_intensity: options?.motionIntensity || 'medium',
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.WAN_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${process.env.WAN_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
       }
     );
 
@@ -230,17 +227,17 @@ export async function generateWithWanImageToVideo(
     return {
       success: true,
       data: {
-        url: response.data.video_url
+        url: response.data.video_url,
       },
       model: 'wan_image_to_video',
-      creditsUsed: 4
+      creditsUsed: 4,
     };
   } catch (error: any) {
     return {
       success: false,
       error: error.message,
       model: 'wan_image_to_video',
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
@@ -262,30 +259,30 @@ export async function generateWithWanImageEdit(
         image_url: imageUrl,
         edit_type: editType, // 'cartoon', 'drawing', 'virtual_model', etc.
         style_strength: options?.styleStrength || 0.7,
-        preserve_details: options?.preserveDetails || true
+        preserve_details: options?.preserveDetails || true,
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.WAN_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${process.env.WAN_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
       }
     );
 
     return {
       success: true,
       data: {
-        url: response.data.edited_image_url
+        url: response.data.edited_image_url,
       },
       model: `wan_${editType}` as AIModel,
-      creditsUsed: 1
+      creditsUsed: 1,
     };
   } catch (error: any) {
     return {
       success: false,
       error: error.message,
       model: `wan_${editType}` as AIModel,
-      creditsUsed: 0
+      creditsUsed: 0,
     };
   }
 }
@@ -303,24 +300,24 @@ export async function generateWithWanAI(
   switch (capability) {
     case 'wan_text_to_image':
       return generateWithWanTextToImage(input.prompt!, options);
-    
+
     case 'wan_text_to_video':
       return generateWithWanTextToVideo(input.prompt!, options);
-    
+
     case 'wan_image_to_video':
       return generateWithWanImageToVideo(input.imageUrl!, input.prompt, options);
-    
+
     case 'wan_photo_to_drawing':
     case 'wan_cartoon_avatar':
     case 'wan_virtual_model':
       return generateWithWanImageEdit(input.imageUrl!, capability.replace('wan_', ''), options);
-    
+
     default:
       return {
         success: false,
         error: `Unsupported Wan AI capability: ${capability}`,
         model: capability as AIModel,
-        creditsUsed: 0
+        creditsUsed: 0,
       };
   }
 }

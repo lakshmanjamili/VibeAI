@@ -1,6 +1,7 @@
 # 🌐 Connect WordPress Domain to Vercel Deployment
 
 ## 📋 Prerequisites
+
 - WordPress site with domain registered
 - VibeAI code deployed on Vercel
 - Access to WordPress hosting DNS settings
@@ -12,11 +13,13 @@
 ### **Step 1: Deploy to Vercel**
 
 1. **Login to Vercel:**
+
 ```bash
 vercel login
 ```
 
 2. **Deploy your VibeAI project:**
+
 ```bash
 # From your VibeAI directory
 vercel
@@ -28,9 +31,11 @@ vercel
 ```
 
 3. **Get your Vercel deployment URL:**
+
 ```bash
 vercel --prod
 ```
+
 This will give you a URL like: `https://your-project.vercel.app`
 
 ### **Step 2: Configure Custom Domain in Vercel**
@@ -47,6 +52,7 @@ This will give you a URL like: `https://your-project.vercel.app`
 
 3. **Get DNS Records:**
    Vercel will provide DNS records like:
+
    ```
    Type: A
    Name: @
@@ -115,10 +121,12 @@ This will give you a URL like: `https://your-project.vercel.app`
 ## 🚀 Method 2: Subdomain Approach (Alternative)
 
 ### **Step 1: Create Subdomain**
+
 - In WordPress hosting, create subdomain: `app.yourdomain.com`
 - Point subdomain to Vercel deployment
 
 ### **Step 2: Update WordPress**
+
 - Keep main WordPress site at `yourdomain.com`
 - Link to VibeAI app at `app.yourdomain.com`
 
@@ -132,6 +140,7 @@ This will give you a URL like: `https://your-project.vercel.app`
 2. **VibeAI at subpath:** `yourdomain.com/app`
 
 **Setup:**
+
 ```nginx
 # In WordPress hosting (if using Nginx)
 location /app {
@@ -146,12 +155,14 @@ location /app {
 ## 🎯 Recommended Setup Steps
 
 ### **Step 1: Backup WordPress**
+
 ```bash
 # Backup your WordPress site before making changes
 # Export content, download files, backup database
 ```
 
 ### **Step 2: Deploy VibeAI to Vercel**
+
 ```bash
 # In your VibeAI directory
 vercel login
@@ -161,6 +172,7 @@ vercel --prod
 ```
 
 ### **Step 3: Configure Environment Variables**
+
 ```bash
 # Add production environment variables in Vercel dashboard
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
@@ -171,12 +183,14 @@ CLERK_SECRET_KEY=your_clerk_secret
 ```
 
 ### **Step 4: Update DNS Settings**
+
 1. Login to your domain registrar/DNS provider
 2. Replace A records with Vercel's IP addresses
 3. Update CNAME records as needed
 4. Wait for propagation (24-48 hours)
 
 ### **Step 5: SSL Certificate**
+
 - Vercel automatically provides SSL certificates
 - Your site will be accessible via HTTPS
 
@@ -204,6 +218,7 @@ CLERK_SECRET_KEY=your_clerk_secret
    - Don't delete email-related DNS entries
 
 ### **DNS Propagation Check:**
+
 ```bash
 # Check if DNS has updated
 nslookup yourdomain.com
@@ -215,10 +230,12 @@ dig yourdomain.com A
 ## 📊 What This Achieves
 
 ### **Before:**
+
 - `yourdomain.com` → WordPress site
 - VibeAI → `your-project.vercel.app`
 
 ### **After:**
+
 - `yourdomain.com` → VibeAI (your Next.js app)
 - WordPress content can be migrated or archived
 
@@ -238,12 +255,14 @@ dig yourdomain.com A
 ## 🚨 Important Notes
 
 ### **Before Making Changes:**
+
 1. **Backup WordPress:** Export all content, themes, plugins
 2. **Note Email Settings:** Preserve MX records for email
 3. **Test First:** Use a subdomain to test before switching main domain
 4. **Plan Downtime:** DNS changes can take 24-48 hours
 
 ### **SEO Considerations:**
+
 1. **Set up 301 redirects** if WordPress had SEO value
 2. **Update Google Search Console** with new site
 3. **Submit new sitemap** to search engines
