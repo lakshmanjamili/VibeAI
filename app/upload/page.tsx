@@ -261,15 +261,16 @@ export default function UploadPage() {
 
   // Form validation
   const validateForm = (): boolean => {
-    if (!file) {
+    // For AI-generated content, we don't need a file
+    if (!aiGeneratedUrl && !file) {
       toast({
         title: 'No file selected',
-        description: 'Please select a file to upload',
+        description: 'Please select a file or generate content with AI',
         variant: 'destructive',
       });
       return false;
     }
-    
+
     if (!title.trim()) {
       toast({
         title: 'Title required',
@@ -278,7 +279,7 @@ export default function UploadPage() {
       });
       return false;
     }
-    
+
     if (title.length > 100) {
       toast({
         title: 'Title too long',
@@ -287,7 +288,7 @@ export default function UploadPage() {
       });
       return false;
     }
-    
+
     if (description.length > 500) {
       toast({
         title: 'Description too long',
@@ -296,7 +297,7 @@ export default function UploadPage() {
       });
       return false;
     }
-    
+
     if (prompt.length > 2000) {
       toast({
         title: 'Prompt too long',
@@ -305,7 +306,7 @@ export default function UploadPage() {
       });
       return false;
     }
-    
+
     return true;
   };
 
@@ -582,11 +583,11 @@ export default function UploadPage() {
 
   // Main upload interface
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-purple-950/30 dark:via-slate-900 dark:to-blue-950/30">
       <Navbar />
       <main className="container mx-auto px-4 pt-20 pb-12">
         <div className="max-w-2xl mx-auto">
-          <Card>
+          <Card className="shadow-xl backdrop-blur-sm bg-white/95 dark:bg-slate-900/95 border-2">
             <CardHeader>
               <CardTitle className="text-2xl">Upload Content</CardTitle>
               <CardDescription>
@@ -843,7 +844,7 @@ export default function UploadPage() {
               {/* Upload Button */}
               <Button
                 onClick={handleUpload}
-                disabled={uploadState.loading || !file || !title.trim()}
+                disabled={uploadState.loading || (!file && !aiGeneratedUrl) || !title.trim()}
                 className="w-full"
                 size="lg"
               >

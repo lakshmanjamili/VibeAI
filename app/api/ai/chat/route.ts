@@ -20,14 +20,42 @@ export async function POST(request: NextRequest) {
     }
 
     // Check chat credits
-    const { data: hasCredits } = await (supabase as any).rpc('check_user_ai_credits', {
-      p_user_id: userIdentifier,
-      p_model: 'chat'
-    });
+    let { data: credits } = await (supabase as any)
+      .from('user_ai_credits')
+      .select('*')
+      .eq('user_id', userIdentifier)
+      .single();
 
-    if (!hasCredits) {
+    if (!credits) {
+      // Create default credits for new user
+      const { data } = await (supabase as any)
+        .from('user_ai_credits')
+        .insert({
+          user_id: userIdentifier,
+          imagen_used: 0,
+          imagen_limit: 10,
+          gemini_used: 0,
+          gemini_limit: 50,
+          grok_used: 0,
+          grok_limit: 5,
+          veo_used: 0,
+          veo_limit: 2,
+          nano_banana_used: 0,
+          nano_banana_limit: 10,
+          chat_messages_used: 0,
+          chat_messages_limit: 100
+        })
+        .select()
+        .single();
+      credits = data;
+    }
+
+    const chatUsed = credits?.chat_messages_used || 0;
+    const chatLimit = credits?.chat_messages_limit || 100;
+
+    if (chatUsed >= chatLimit) {
       return NextResponse.json(
-        { error: 'Insufficient chat credits' },
+        { error: `Insufficient chat credits. You have used ${chatUsed}/${chatLimit}.` },
         { status: 403 }
       );
     }
@@ -84,11 +112,10 @@ export async function POST(request: NextRequest) {
       .eq('id', conversation.id);
 
     // Increment chat usage
-    await (supabase as any).rpc('increment_ai_usage', {
-      p_user_id: userIdentifier,
-      p_model: 'chat',
-      p_amount: 1
-    });
+    await (supabase as any)
+      .from('user_ai_credits')
+      .update({ chat_messages_used: chatUsed + 1 })
+      .eq('user_id', userIdentifier);
 
     return NextResponse.json({
       success: true,

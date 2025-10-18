@@ -78,14 +78,23 @@ A cutting-edge community platform where creators share, discover, and celebrate 
 - **Authentication**: Clerk
 - **Animations**: Framer Motion
 
+## 📚 Documentation
+
+- 📦 **[Storage Setup Guide](./STORAGE_SETUP_GUIDE.md)** - Configure Supabase Storage for AI generations
+- 🚀 **[Deployment Checklist](./DEPLOYMENT_CHECKLIST.md)** - Complete deployment guide
+- 🔧 **[Gemini Setup Guide](./GEMINI_SETUP.md)** - Configure Nano Banana AI
+- 📖 **[Domain Setup](./DOMAIN_SETUP_GUIDE.md)** - Custom domain configuration
+- 🎨 **[Vision Document](./VISION.md)** - Product vision and roadmap
+
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Supabase account
 - Clerk account
+- Gemini API key (for AI generation)
 
 ### Installation
 
@@ -112,8 +121,10 @@ Fill in your environment variables:
 
 4. Set up Supabase:
 - Create a new Supabase project
-- Run the SQL scripts in `supabase/schema.sql` and `supabase/storage.sql`
-- Enable authentication and storage
+- Run the database migration: `documents/sql/01_database_schema.sql`
+- Run the AI credits migration: `documents/sql/AI_CREDITS_MIGRATION.sql`
+- **IMPORTANT**: Run the storage setup: `documents/sql/STORAGE_SETUP.sql`
+- See [STORAGE_SETUP_GUIDE.md](./STORAGE_SETUP_GUIDE.md) for detailed instructions
 
 5. Run the development server:
 ```bash

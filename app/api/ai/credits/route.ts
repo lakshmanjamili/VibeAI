@@ -17,12 +17,66 @@ export async function GET(request: NextRequest) {
 
     if (!credits) {
       // Create default credits for new user
-      const { data } = await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('user_ai_credits')
-        .insert({ user_id: userIdentifier })
+        .insert({ 
+          user_id: userIdentifier,
+          imagen_used: 0,
+          imagen_limit: 10,
+          gemini_used: 0,
+          gemini_limit: 50,
+          grok_used: 0,
+          grok_limit: 5,
+          veo_used: 0,
+          veo_limit: 2,
+          nano_banana_used: 0,
+          nano_banana_limit: 10,
+          chat_messages_used: 0,
+          chat_messages_limit: 100
+        })
         .select()
         .single();
-      credits = data;
+      
+      if (error) {
+        console.error('Error creating credits:', error);
+        // Return default values if creation fails
+        credits = {
+          imagen_used: 0,
+          imagen_limit: 10,
+          gemini_used: 0,
+          gemini_limit: 50,
+          grok_used: 0,
+          grok_limit: 5,
+          veo_used: 0,
+          veo_limit: 2,
+          nano_banana_used: 0,
+          nano_banana_limit: 10,
+          chat_messages_used: 0,
+          chat_messages_limit: 100,
+          reset_date: new Date().toISOString()
+        };
+      } else {
+        credits = data;
+      }
+    }
+
+    // Ensure credits object has all required fields
+    if (!credits) {
+      credits = {
+        imagen_used: 0,
+        imagen_limit: 10,
+        gemini_used: 0,
+        gemini_limit: 50,
+        grok_used: 0,
+        grok_limit: 5,
+        veo_used: 0,
+        veo_limit: 2,
+        nano_banana_used: 0,
+        nano_banana_limit: 10,
+        chat_messages_used: 0,
+        chat_messages_limit: 100,
+        reset_date: new Date().toISOString()
+      };
     }
 
     // Get user subscription
@@ -50,38 +104,38 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       credits: {
         imagen: {
-          used: credits.imagen_used,
-          limit: credits.imagen_limit,
-          remaining: credits.imagen_limit - credits.imagen_used
+          used: credits.imagen_used || 0,
+          limit: credits.imagen_limit || 10,
+          remaining: (credits.imagen_limit || 10) - (credits.imagen_used || 0)
         },
         gemini: {
-          used: credits.gemini_used,
-          limit: credits.gemini_limit,
-          remaining: credits.gemini_limit - credits.gemini_used
+          used: credits.gemini_used || 0,
+          limit: credits.gemini_limit || 50,
+          remaining: (credits.gemini_limit || 50) - (credits.gemini_used || 0)
         },
         grok: {
-          used: credits.grok_used,
-          limit: credits.grok_limit,
-          remaining: credits.grok_limit - credits.grok_used
+          used: credits.grok_used || 0,
+          limit: credits.grok_limit || 5,
+          remaining: (credits.grok_limit || 5) - (credits.grok_used || 0)
         },
         veo: {
-          used: credits.veo_used,
-          limit: credits.veo_limit,
-          remaining: credits.veo_limit - credits.veo_used
+          used: credits.veo_used || 0,
+          limit: credits.veo_limit || 2,
+          remaining: (credits.veo_limit || 2) - (credits.veo_used || 0)
         },
         nano_banana: {
-          used: credits.nano_banana_used,
-          limit: credits.nano_banana_limit,
-          remaining: credits.nano_banana_limit - credits.nano_banana_used
+          used: credits.nano_banana_used || 0,
+          limit: credits.nano_banana_limit || 10,
+          remaining: (credits.nano_banana_limit || 10) - (credits.nano_banana_used || 0)
         },
         chat: {
-          used: credits.chat_messages_used,
-          limit: credits.chat_messages_limit,
-          remaining: credits.chat_messages_limit - credits.chat_messages_used
+          used: credits.chat_messages_used || 0,
+          limit: credits.chat_messages_limit || 100,
+          remaining: (credits.chat_messages_limit || 100) - (credits.chat_messages_used || 0)
         }
       },
       subscription: subscription?.subscription_plans?.name || 'Free',
-      resetDate: credits.reset_date
+      resetDate: credits?.reset_date || new Date().toISOString()
     });
 
   } catch (error: any) {
